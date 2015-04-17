@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# The script checks for
+#	File Descriptors used by agent
+# Should there be error in reading any of the above parameters there will be "NA"
+# in result.
+
+OUTPUT='[AGENT_MESSAGE]{"progress": 100, "result":['
+USER="cronus"
+KEY=
+VALUE=
+
+OS_NAME=$(uname -o)
+if [ "$OS_NAME" == "Cygwin" ]; then
+      echo '[AGENT_MESSAGE]{"progress": 100, "result":"App monitor script unsupported in running win32 platform"}'
+      exit 0
+fi
+
+convertJSON()
+{
+	KEY=$1
+	VALUE=$2
+	OUTPUT=$OUTPUT"{\"key\":\"$KEY\",\"value\": "$VALUE"},"
+}
+
+
+# Check the memory and FDs of Cronus Agent
+
+exec 3>&2-	#Silence the stderr
+
+AGENT_PATTERN="python.*paster.*agent\.pid.*agent_config"
+PID=$(pgrep -u $USER -f $AGENT_PATTERN)
+if [ X"$PID" != X ]; then
+	AGENTFD=$(ls /proc/${PID}/fd | wc -l) 
+	AGENTMEM=$(ps uh -p ${PID} | awk '{print $6}')
+fi
+
+USE=$(df -kP / | grep -vE '^Filesystem|tmpfs|cdrom' | awk '{sub(/%/, ""); print $5}' | head -1 2> /dev/null)
+
+convertJSON agentUsedFD ${AGENTFD:=\"-1\"}
+convertJSON agentUsedMem ${AGENTMEM:=\"-1\"}
+convertJSON diskUsage ${USE:=\"-1\"}
+
+exec 2>&3- #Restore the original stderr
+
+# Finally, complete the JSON format and output it
+OUTPUT=`echo $OUTPUT | sed -e s/,$//g`"]}[AGENT_MESSAGE_END]"
+echo $OUTPUT

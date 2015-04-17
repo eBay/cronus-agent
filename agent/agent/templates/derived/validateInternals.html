@@ -1,0 +1,58 @@
+<%inherit file='/base/agentNav.html' />
+
+<%def name="title()">ValidateInternals</%def>
+<%def name="head()">
+
+
+</%def>
+
+<div class="container" >
+
+<br><a href="/agent/logs">Agent Log</a>
+
+<%def name="buildRow(key, value)">
+    <tr>
+        <td> ${key} </td>
+        <%
+            l = []
+            if type(value) is list:
+                for item in value:
+                    l.append(str(item))
+            elif type(value) is dict:
+                for key1 in sorted(value.keys()):
+                    if not str(key1).startswith('password'):
+                        l.append(str(key1) + '=' + str(value[key1]))
+                    else:
+                        l.append(str(key1) + '=******')
+            else:
+                l.append(str(value))
+        %>
+
+        <td>
+            %for item in l:
+                ${str(item)} <br />
+            %endfor
+        </td>
+    </tr>
+</%def>
+
+
+ 
+
+<table border='1'>
+    %for item in c.status:
+        ${buildRow(item[0], item[1])}
+    %endfor
+</table>
+
+
+</div>
+
+<%def name="footer()">
+<div class="container" >
+<p>
+<br/><br/>
+<a href="#top" >Top</a>
+</p>
+</div>
+</%def>

@@ -1,0 +1,225 @@
+
+display_help() {
+	echo "MUST RUN AS ROOT!!!"
+    echo "Prerequisite: Must run as root. Need curl/wget to be installed."
+    echo "curl -sS 'https://raw.githubusercontent.com/yubin154/cronusagent/master/agent/scripts/agent_install/install_agent' | sudo pkg_ver=<agent_version> target_dir=<install_root_dir> bash"
+ 
+    echo "Command examples:"
+    echo "curl -sS 'https://raw.githubusercontent.com/yubin154/cronusagent/master/agent/scripts/agent_install/install_agent' | sudo pkg_ver=0.1.6 target_dir=/var  bash"
+    echo ""
+}
+
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root" 1>&2
+    echo ""
+    display_help
+    exit -1
+fi
+
+if [ -z ${pkg_ver} ]; then
+    echo "Input error! pkg_ver has to be specified." 1>&2
+    echo ""
+    display_help
+    exit -1
+fi
+
+if [ -z ${target_dir} ]; then
+    echo "Input error! target_dir has to be specified." 1>&2
+    echo ""
+    display_help
+    exit -1
+fi
+
+if [[ ! -f /usr/bin/python2.6 ]]; then
+    echo "Python2.6 needs to be installed" 1>&2
+    echo ""
+    exit -1
+fi
+
+echo stop any existing cronus agent
+initctl stop cronus
+
+echo "download and install agent of version ${pkg_ver} in ${target_dir}"
+
+# Some defaults
+DIR="$target_dir/agent_install"
+LOG="$DIR/agentinstall.log"
+TMP=/tmp/$$.tmp
+AGENT_PACKAGE_NAME=cronus-agent-bare.tar.gz
+AGENT_ROOT=${target_dir}/cronus/software/service_nodes/agent
+
+echo ${DIR}
+
+# Let's begin
+mkdir -p ${DIR}
+mkdir -p ${DIR}/pkgs
+cd $DIR
+touch $LOG
+
+
+# Error reporting function
+fatal_error () {
+	MSG=$1
+	echo "----------------------------------" | tee -a $LOG
+	echo "FATAL ERROR on `date`: $MSG Aborting..." | tee -a $LOG
+	rm -rf $DIR/pkgs
+	rm -f $TMP
+	exit -1
+}
+
+# Logging function
+log_event () {
+	MSG=$1
+	echo "$MSG" | tee -a $LOG
+}
+
+# Check OS and find right python package to install
+check_pypkg () {
+	OS=$(awk '/DISTRIB_ID=/' /etc/*-release | sed 's/DISTRIB_ID=//' | tr '[:upper:]' '[:lower:]')
+	ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
+	case $(uname -m) in
+	x86_64)
+		ARCH=x64  # or AMD64 or Intel64 or whatever
+		;;
+	i*86)
+		ARCH=x86  # or IA32 or Intel32 or whatever
+    		;;
+	*)
+		# leave ARCH as-is
+		;;
+	esac
+	VERSION=$(awk '/DISTRIB_RELEASE=/' /etc/*-release | sed 's/DISTRIB_RELEASE=//' | sed 's/[.]//')
+	if [ -z "$OS" ]; then
+		OS=$(awk '{print $1}' /etc/*-release | tr '[:upper:]' '[:lower:]')
+	fi
+	if [ -z "$VERSION" ]; then
+		VERSION=$(awk '{print $3}' /etc/*-release)
+	fi
+	OPENSSL=$(openssl version | tr '[:upper:]' '[:lower:]' | awk '{print $1,$2}' | sed 's/ //;s/[.]//;s/[.].*//')
+	echo "1.0.0.${ARCH}_${OS}_${OPENSSL}"
+}
+
+pypkg_ver=$( check_pypkg )
+echo ${pypkg_ver}
+
+cd ${DIR}/pkgs
+
+log_event "Start add cronus and cronusapp"
+sudo groupadd -g 61000 app
+sudo useradd -u 78389 cronus -g app
+sudo useradd -u 78402 cronusapp -g app
+
+log_event "Complete add cronus and cronusapp"
+
+log_event "full_sudo is true. Start set password. Need to just do once"
+log_event "Remove the current lines with cronus /etc/sudoers"
+sed -i '/cronus/d' /etc/sudoers
+log_event "Add ALL NOPASSWD: ALL with cronus /etc/sudoers"
+echo 'cronus  ALL = (ALL) NOPASSWD: ALL' >>/etc/sudoers
+echo 'cronusapp  ALL = (ALL) NOPASSWD: ALL' >>/etc/sudoers
+
+log_event "Complete set /etc/sudoers"
+
+log_event "Start set /etc/sudoers.d/netgroup"
+#remove the current lines in  /etc/sudoers.d/netgroup with CRONUSPRIVCMD DOSPRIVCMD cronus
+if [ -f /etc/sudoers.d/netgroups ]; then
+
+	log_event "Found existing sudoers.d/netgroups remove CRONUSPRIVCMD  DOSPRIVCMD  cronus"
+	sed -i '/CRONUSPRIVCMD/d' /etc/sudoers.d/netgroups
+	sed -i '/DOSPRIVCMD/d' /etc/sudoers.d/netgroups
+	sed -i '/cronus/d' /etc/sudoers.d/netgroups
+
+fi
+
+echo 'Cmnd_Alias	CRONUSPRIVCMD = /sbin/initctl stop cronus,/sbin/initctl start cronus,/sbin/initctl status cronus,/bin/chown -R ${target_dir}/*, /bin/rm -rf ${target_dir}/*, /usr/bin/lsof' >> /etc/sudoers.d/netgroups
+echo 'Cmnd_Alias	DOSPRIVCMD = /usr/sbin/dmidecode,/usr/bin/ipmitool' >> /etc/sudoers.d/netgroups
+echo 'cronus  ALL=NOPASSWD: CRONUSPRIVCMD' >> /etc/sudoers.d/netgroups
+echo 'cronus  ALL=(cronusapp) NOPASSWD: ALL' >> /etc/sudoers.d/netgroups
+echo 'cronusapp ALL=NOPASSWD: DOSPRIVCMD' >> /etc/sudoers.d/netgroups
+chmod 0440 /etc/sudoers.d/netgroups
+log_event "Create and update sudoers.d/netgroup, made it permission 0440 and will not try to modify it further"
+
+
+log_event "Complete set  /etc/sudoers.d/netgroup"
+log_event ' '
+
+# Cronus agent
+if [ -d $DIR/pkgs ]; then
+
+	cd ${DIR}/pkgs
+	wget "http://www.stackscaling.com/agentrepo/${AGENT_PACKAGE_NAME}"
+	wget "http://www.stackscaling.com/agentrepo/agent-${pkg_ver}.unix.cronus"
+	wget "http://www.stackscaling.com/agentrepo/agent_config-${pkg_ver}prod.unix.cronus"
+	wget "http://www.stackscaling.com/agentrepo/python_package-${pypkg_ver}.cronus"
+
+        log_event "Start Installing and configuring Cronus agent..."
+        cd ${target_dir}
+        
+        rm -rf ${target_dir}/cronus
+        tar xzpf $DIR/pkgs/${AGENT_PACKAGE_NAME} >> $LOG 2>&1
+        if [ $? -ne 0 ]; then
+                fatal_error "Couldn't unpack Cronus agent archive."
+        fi
+	sed -i "s|ROOT_DIR|${target_dir}|g" ${target_dir}/cronus/software/cronus.conf
+	if [ -d /etc/init ]; then
+		cp ${target_dir}/cronus/software/cronus.conf /etc/init/
+	fi
+	sed -i "s|ROOT_DIR|${target_dir}|g" ${target_dir}/cronus/software/run
+
+        mkdir $AGENT_ROOT/installed-packages/agent/${pkg_ver}.unix
+        tar xzpf $DIR/pkgs/agent-${pkg_ver}.unix.cronus -C $AGENT_ROOT/installed-packages/agent/${pkg_ver}.unix 
+        if [ $? -ne 0 ]; then
+                fatal_error "Couldn't unpack Cronus agent archive."
+        fi
+
+        mkdir $AGENT_ROOT/installed-packages/agent_config/${pkg_ver}prod.unix
+        tar xzpf $DIR/pkgs/agent_config-${pkg_ver}prod.unix.cronus -C $AGENT_ROOT/installed-packages/agent_config/${pkg_ver}prod.unix
+        if [ $? -ne 0 ]; then
+                fatal_error "Couldn't unpack Cronus agent config archive."
+        fi
+
+        mkdir $AGENT_ROOT/installed-packages/python_package/${pypkg_ver}
+        tar xzpf $DIR/pkgs/python_package-${pypkg_ver}.cronus -C $AGENT_ROOT/installed-packages/python_package/${pypkg_ver} 
+        if [ $? -ne 0 ]; then
+                fatal_error "Couldn't unpack Cronus agent python package archive."
+        fi
+        
+        mkdir $AGENT_ROOT/manifests/agent_selfupdate-${pkg_ver}
+        cd ${target_dir}/cronus/software/service_nodes/agent/manifests
+        ln -s $AGENT_ROOT/manifests/agent_selfupdate-${pkg_ver} active
+        
+        cd $AGENT_ROOT/manifests/agent_selfupdate-${pkg_ver}
+        ln -s $AGENT_ROOT/installed-packages/agent/${pkg_ver}.unix agent
+        ln -s $AGENT_ROOT/installed-packages/agent_config/${pkg_ver}prod.unix agent_config
+        ln -s $AGENT_ROOT/installed-packages/python_package/${pypkg_ver} python_package
+
+	#sed -i "s|_AGENTROOT_|${target_dir}/cronus/software|g" $AGENT_ROOT/manifests/active/agent_config/prod.ini
+	pushd "${target_dir}/cronus/software/service_nodes/agent/manifests/active/agent"
+	./cronus/scripts/activate
+	popd
+
+        chown -R cronus:app ${target_dir}/cronus
+        chown -R cronusapp:app /${target_dir}/cronus/software/cronusapp_home
+        cd $DIR
+	log_event "Complete Installing and configuring Cronus agent..."
+	log_event " "
+fi
+
+
+log_event "Start set up upstart: download and add cronus.conf"
+
+cd $DIR/pkgs
+chmod 644 cronus.conf
+cp cronus.conf /etc/init
+
+log_event "Start cronus by upstart:"
+sudo initctl start cronus
+log_event "Done set up upstart"
+
+rm -rf $DIR/pkgs
+rm -f $TMP
+
+log_event "Removed pkgs; finished at `date`"
+log_event "-------------------------------------------"
+
+

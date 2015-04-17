@@ -1,0 +1,244 @@
+html body {
+	width: 100% -320;
+	height: 100%;
+	overflow: hidden;
+}
+
+.highcharts-title {
+	cursor: pointer;
+}
+
+div#page_content {
+	height: 75%;
+}
+
+div#mainchart_container {
+	position: absolute;
+	margin-top: 10px;
+	background-color: inherit;
+}
+
+#more_div {
+	display: block;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+#toggle_sideBar {
+	width: 30px;
+	height: 750px;
+	position:absolute;
+	right:330px;
+}
+#sideBar_main {
+	width: 320px;
+	height: 750px;
+	position: absolute;
+	right: 10px;
+	font-size: 90%;
+	padding-right: 5px;
+	margin-top: 10px;
+}
+.side_bar_dropdown {
+	width: 100%;
+	position: relative;
+	display: inline-block;
+}
+
+.accordion-heading .accordion-toggle .btn{
+	outline: 0;
+}
+
+.label {
+	cursor: default;
+}
+
+#sideBar_main #search_list {
+	height: 385px;
+	overflow: scroll;
+	overflow-x: hidden;
+}
+
+#sideBar_main table {
+	padding-top: 20px;
+	padding-bottom: 15px;
+	padding-left: 0px;
+	cursor: pointer;
+}
+
+#sideBar_main table td {
+	padding-left: 15px;
+}
+
+#filterList button {
+	padding-top: 10px;
+	padding-bottom: 5px;
+}
+
+#mainchart_container {
+	overflow-y: scroll;
+}
+
+.modal {
+	width: 1200px;
+	margin-left: -600px;
+}
+
+#top_few_metrics_chart_container {
+	height: 520px;
+	width: 1200px;
+}
+
+.modal-body {
+	overflow-y: visible;
+}
+
+.modal .modal-body {
+	max-height: 940;
+	max-width: 100%;
+	height: auto;
+	width: auto;
+}
+
+.single_chart_container {
+	position: relative;
+	float: left;
+	margin-left: 12px;
+	margin-right: 12px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+#heatmap_container {
+/* 	overflow-y: scroll; */
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+div.heatmap_container {
+	float: left;
+	position: relative;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 2px;
+	padding-right: 2px;
+	border: 1px solid;
+	background: none repeat scroll 0 0 #FAFAFA;
+	border: 1px solid black;
+	border-radius: 5px 5px 5px 5px;
+	box-shadow: 2px 2px 8px #555555;
+	display: inline-block;
+}
+
+h6 {
+	color: #999999;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+
+.heatmap_unit {
+	border: 1px solid black;
+	color: #362B36;
+	cursor: pointer;
+	display: inline-table;
+	height: 16px;
+	line-height: 20px;
+	margin: 1px;
+	margin-bottom: 2px;
+	text-decoration: underline;
+	text-indent: 2px;
+	width: 16px;
+}
+.container-fluid{
+	padding-top: 10 !important;
+}
+
+.align-left {
+position: absolute;
+left: 20px;
+
+}
+.align-right {
+position: absolute;
+right: 20px;
+
+}
+
+section .heatmap_container .green {
+
+	background: rgb(70,198,15); /* Old browsers */
+	background: -moz-radial-gradient(center, ellipse cover,  rgba(70,198,15,1) 0%, rgba(56,183,14,1) 40%, rgba(52,170,13,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(70,198,15,1)), color-stop(40%,rgba(56,183,14,1)), color-stop(100%,rgba(52,170,13,1))); /* Chrome,Safari4+ */
+	background: -webkit-radial-gradient(center, ellipse cover,  rgba(70,198,15,1) 0%,rgba(56,183,14,1) 40%,rgba(52,170,13,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-radial-gradient(center, ellipse cover,  rgba(70,198,15,1) 0%,rgba(56,183,14,1) 40%,rgba(52,170,13,1) 100%); /* Opera 12+ */
+	background: -ms-radial-gradient(center, ellipse cover,  rgba(70,198,15,1) 0%,rgba(56,183,14,1) 40%,rgba(52,170,13,1) 100%); /* IE10+ */
+	background: radial-gradient(ellipse at center,  rgba(70,198,15,1) 0%,rgba(56,183,14,1) 40%,rgba(52,170,13,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#46c60f', endColorstr='#34aa0d',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+section .heatmap_container .yellow {
+	background: #f8bb0f;
+	background: -moz-linear-gradient(top, #f8bb0f 0, #f9ee41 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f8bb0f),
+		color-stop(100%, #f9ee41));
+	background: -webkit-linear-gradient(top, #f8bb0f 0, #f9ee41 100%);
+	background: -o-linear-gradient(top, #f8bb0f 0, #f9ee41 100%);
+	background: -ms-linear-gradient(top, #f8bb0f 0, #f9ee41 100%);
+	background: linear-gradient(top, #f8bb0f 0, #f9ee41 100%);
+}
+
+section .heatmap_container .red {
+	background: rgb(224,103,92); /* Old browsers */
+	background: -moz-radial-gradient(center, ellipse cover,  rgba(224,103,92,1) 2%, rgba(229,75,64,1) 54%, rgba(229,45,0,1) 81%, rgba(255,0,0,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(2%,rgba(224,103,92,1)), color-stop(54%,rgba(229,75,64,1)), color-stop(81%,rgba(229,45,0,1)), color-stop(100%,rgba(255,0,0,1))); /* Chrome,Safari4+ */
+	background: -webkit-radial-gradient(center, ellipse cover,  rgba(224,103,92,1) 2%,rgba(229,75,64,1) 54%,rgba(229,45,0,1) 81%,rgba(255,0,0,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-radial-gradient(center, ellipse cover,  rgba(224,103,92,1) 2%,rgba(229,75,64,1) 54%,rgba(229,45,0,1) 81%,rgba(255,0,0,1) 100%); /* Opera 12+ */
+	background: -ms-radial-gradient(center, ellipse cover,  rgba(224,103,92,1) 2%,rgba(229,75,64,1) 54%,rgba(229,45,0,1) 81%,rgba(255,0,0,1) 100%); /* IE10+ */
+	background: radial-gradient(ellipse at center,  rgba(224,103,92,1) 2%,rgba(229,75,64,1) 54%,rgba(229,45,0,1) 81%,rgba(255,0,0,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e0675c', endColorstr='#ff0000',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+
+section .heatmap_container .black {
+	background: rgb(93,98,102); /* Old browsers */
+	background: -moz-radial-gradient(center, ellipse cover,  rgba(93,98,102,1) 0%, rgba(7,12,7,1) 92%, rgba(7,1,4,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(93,98,102,1)), color-stop(92%,rgba(7,12,7,1)), color-stop(100%,rgba(7,1,4,1))); /* Chrome,Safari4+ */
+	background: -webkit-radial-gradient(center, ellipse cover,  rgba(93,98,102,1) 0%,rgba(7,12,7,1) 92%,rgba(7,1,4,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-radial-gradient(center, ellipse cover,  rgba(93,98,102,1) 0%,rgba(7,12,7,1) 92%,rgba(7,1,4,1) 100%); /* Opera 12+ */
+	background: -ms-radial-gradient(center, ellipse cover,  rgba(93,98,102,1) 0%,rgba(7,12,7,1) 92%,rgba(7,1,4,1) 100%); /* IE10+ */
+	background: radial-gradient(ellipse at center,  rgba(93,98,102,1) 0%,rgba(7,12,7,1) 92%,rgba(7,1,4,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5d6266', endColorstr='#070104',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+section .heatmap_container .noclass {
+	background: #FFFFFF;
+	background: -moz-linear-gradient(top, #FFFFFF 0, #DFDFDF 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #DFDFDF),
+		color-stop(100%, #DFDFDF));
+	background: -webkit-linear-gradient(top, #FFFFFF 0, #DFDFDF 100%);
+	background: -o-linear-gradient(top, #FFFFFF 0, #DFDFDF 100%);
+	background: -ms-linear-gradient(top, #FFFFFF 0, #DFDFDF 100%);
+	background: linear-gradient(top, #FFFFFF 0, #DFDFDF 100%);
+}
+.qtip .qtip-content{
+	overflow-y:auto;
+	max-height: 500px;
+}
+
+#all_fqdn_btn {
+	margin-top: 0px;
+	display: inline-block;
+}
+
+#heatmap_container section {
+	display: inline-block;
+	border: 1px solid black;
+	border-radius: 5px 5px 5px 5px;
+	box-shadow: 2px 2px 8px #014164;
+	width: 100%;
+	margin-bottom: 25px;
+	/*padding-top: 20px;*/
+}

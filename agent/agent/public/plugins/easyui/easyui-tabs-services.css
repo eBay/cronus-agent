@@ -1,0 +1,10 @@
+@import url(easyui-tabs-cloud.css);
+
+div#tabs-services.easyui-tabs .tabs-header {
+	border: none;
+	background: none;
+}
+
+div#tabs-services.easyui-tabs .tabs-panels {
+	border: none;
+}

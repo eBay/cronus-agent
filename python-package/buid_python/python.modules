@@ -1,0 +1,8 @@
+nested_dict==1.0.9
+httplib2==0.6.0
+pyyaml==3.09
+Pylons==1.0
+pylint==0.23.0
+mox==0.5.3
+pyOpenSSL==0.13
+M2Crypto

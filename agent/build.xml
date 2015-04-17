@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="agent" default="test">
+    <!-- load overriding dir.root if exists. -->
+    <property file="dir.root.properties"/>
+    <property name="dir.root" value="${basedir}/.."/>
+
+    <!-- overwrite some properties -->
+    <property name="env.build" value="dev"/>
+    <property name="env.test" value="unit"/>
+    <property name="name.version-file" value="version.properties"/>
+    <property name="file.version" value="./cronus/${name.version-file}"/>
+    <property name="pattern.lib" value="[artifact].[ext]"/>
+    <property name="dir.src.main" value="${basedir}/agent"/>
+    <property name="dir.src.test-root" value="${basedir}/agent/tests"/>
+    <property name="package-platform" value="unix"/>
+
+    <!-- os family check -->
+    <condition property="isWindows" value="true">
+        <os family="windows" />
+    </condition>
+
+    <!-- source common -->
+    <property name="dir.common" value="${dir.root}/build"/>
+    <import file="${dir.common}/build-common.xml"/>
+
+    <!-- add proprties after init -->
+    <target name="init.loadprop" depends="build-common.init.loadprop">
+        <property name="dir.python.bin" value="${dir.deploy.local}/service_nodes/agent/manifests/active/python_package/bin/"/>
+    </target>
+
+    <!-- runs pylint code checker -->
+    <target name="pylint" depends="init.package" description="runs pylint code analyzer" unless="nopylint">
+        <if>
+            <isset property="isWindows" />
+            <then>
+                <exec executable="${dir.python.bin}/python" failonerror="true">
+                    <arg value="${dir.python.bin}/Scripts/pylint"/>
+                    <arg value="--rcfile=${dir.common}/.pylintrc"/>
+                    <arg value="${ivy.module}"/>
+                </exec>
+            </then>
+            <else>
+                <exec executable="${dir.python.bin}/python" failonerror="true">
+                    <arg value="${dir.python.bin}/pylint"/>
+                    <arg value="--rcfile=${dir.common}/.pylintrc"/>
+                    <arg value="${ivy.module}"/>
+                </exec>
+            </else>
+        </if>
+    </target>
+
+    <target name="test" depends="init.init-common,make.config" description="runs test" unless="notest">
+        <property name="env.test" value="unit"/>
+        <if>
+            <available file="${dir.src.test}"/>
+            <then>
+                <if>
+                    <isset property="isWindows" />
+                    <then>
+                        <exec executable="${dir.python.bin}/python" failonerror="true" dir="${basedir}">
+                            <arg value="${dir.python.bin}/Scripts/nosetests-2.6-script.py"/>
+                            <arg value="-d"/>
+                            <arg value="-w"/>
+                            <arg value="${dir.src.test}"/>
+                        </exec>
+                    </then>
+                    <else>
+                        <exec executable="${dir.python.bin}/python" failonerror="true" dir="${basedir}">
+                            <arg value="${dir.python.bin}/nosetests"/>
+                            <arg value="-d"/>
+                            <arg value="-w"/>
+                            <arg value="${dir.src.test}"/>
+                        </exec>
+                    </else>
+                </if>
+            </then>
+        </if>
+    </target>
+
+    <!-- creates cronus build -->
+    <target name="build.server" depends="init.package,pylint,test" description="build server">
+        <property name="dir.build.server" value="${dir.target.dist}/${ivy.module}-${package-version}.${package-platform}"/>
+        <delete quiet="true" dir="${dir.build.server}"/>
+        <mkdir dir="${dir.build.server}"/>
+        <!-- copy all source files -->
+        <copy toDir="${dir.build.server}/${ivy.module}">
+            <fileset dir="${basedir}/${ivy.module}">
+                <exclude name="**/*.pyc"/>
+            </fileset>
+        </copy>
+        <!-- copy egg info dir -->
+        <copy toDir="${dir.build.server}/${ivy.module}.egg-info">
+            <fileset dir="${basedir}/${ivy.module}.egg-info"/>
+        </copy>
+        <!-- copy libraries -->
+        <copy toDir="${dir.build.server}/lib">
+            <fileset dir="${dir.lib}"/>
+        </copy>
+        <!-- copy cronus files -->
+        <exec executable="cp">
+            <arg value="-r"/>
+            <arg value="${basedir}/cronus"/>
+            <arg value="${dir.build.server}"/>
+        </exec>
+
+        <antcall target="saveversion" inheritAll="true">
+            <param name="param.path" value="${dir.build.server}/version.properties"/>
+        </antcall>
+        <!-- create the logs dir for the logger -->
+        <mkdir dir="${dir.build.server}/logs"/>
+    </target>
+    <target name="build.config" depends="init.package" description="build config">
+        <property name="dir.build.config.prod" value="${dir.target.dist}/${ivy.module}_config-${package-version}prod.${package-platform}"/>
+        <property name="dir.build.config.test" value="${dir.target.dist}/${ivy.module}_config-${package-version}test.${package-platform}"/>
+        <delete quiet="true" dir="${dir.build.config.prod}"/>
+        <delete quiet="true" dir="${dir.build.config.test}"/>
+
+        <!-- copy all test config files -->
+        <if>
+            <isset property="isWindows" />
+            <then>
+            <copy toDir="${dir.build.config.test}">
+                <fileset dir="${basedir}/conf"/>
+            </copy>
+            </then>
+            <else>
+                <exec executable="cp">
+                    <arg value="-r"/>
+                    <arg value="${basedir}/conf"/>
+                    <arg value="${dir.build.config.test}"/>
+                </exec>
+            </else>
+        </if>
+
+        <!-- make prod config files -->
+        <mkdir dir="${dir.build.config.prod}"/>
+
+        <!-- copy test config cronus dir -->
+        <if>
+            <isset property="isWindows" />
+            <then>
+            <copy toDir="${dir.build.config.prod}/cronus">
+                <fileset dir="${dir.build.config.test}/cronus"/>
+            </copy>
+            </then>
+            <else>
+                <exec executable="cp">
+                    <arg value="-r"/>
+                    <arg value="${dir.build.config.test}/cronus"/>
+                    <arg value="${dir.build.config.prod}"/>
+                </exec>
+            </else>
+        </if>
+
+        <!-- move all prod configs -->
+        <move todir="${dir.build.config.prod}">
+          <fileset dir="${dir.build.config.test}">
+            <include name="prod.ini"/>
+          </fileset>
+        </move>
+
+    </target>
+
+    <target name="build" depends="build.config,build.server" description="build agent"/>
+
+    <!-- creates cronus distributable package -->
+    <target name="package" depends="clean.dist,make.config,init.package,build,process.target.dist,create.cronus" description="package agent"/>
+
+    <!-- deploy targets -->
+    <target name="deploy.local.server" depends="init.package" description="deploys server cronus package to local machine">
+        <!-- deploy server cronus package -->
+        <antcall target="build-common.deploy.cronus.local">
+            <param name="param.service" value="${ivy.module}"/>
+            <param name="param.module" value="${ivy.module}"/>
+            <param name="param.version" value="${package-version}"/>
+            <param name="param.platform" value="${package-platform}"/>
+            <param name="param.package.cronus" value="${dir.target.dist}/${ivy.module}-${package-version}.${package-platform}.cronus"/>
+        </antcall>
+    </target>
+    <target name="deploy.local.config" depends="init.package" description="deploys config cronus package to local machine">
+        <!-- deploy server cronus package -->
+        <antcall target="build-common.deploy.cronus.local">
+            <param name="param.service" value="${ivy.module}"/>
+            <param name="param.module" value="${ivy.module}_config"/>
+            <param name="param.version" value="${package-version}test"/>
+            <param name="param.platform" value="${package-platform}"/>
+            <param name="param.package.cronus" value="${dir.target.dist}/${ivy.module}_config-${package-version}test.${package-platform}.cronus"/>
+        </antcall>
+    </target>
+    <target name="deploy.local" depends="deploy.local.config,deploy.local.server" description="deploy local agent"/>
+
+    <target name="publish.local" description="publishes to local repository">
+        <echo> Failed: Please use the target release.package instead </echo>
+        <fail/>
+    </target>
+
+    <target name="publish.shared" description="publishes to local repository">
+        <echo> Failed: Please use the target release.package instead </echo>
+        <fail/>
+    </target>
+
+    <target name="cronus.startup" depends="init.package" description="stops server on cronus package">
+        <if>
+            <isset property="isWindows" />
+            <then>
+		<antcall target="build-common.cronus.command">
+		    <param name="param.service" value="${ivy.module}"/>
+		    <param name="param.option" value="${env.build}"/>
+		    <param name="param.script" value="startup"/>
+	            <param name="param.option.2" value="win"/>
+		</antcall>
+            </then>
+            <else>
+	        <antcall target="build-common.cronus.command">
+	            <param name="param.service" value="${ivy.module}"/>
+		    <param name="param.option" value="${env.build}"/>
+		    <param name="param.script" value="startup"/>
+                </antcall>
+            </else>
+        </if>
+    </target>
+
+    <target name="cronus.shutdown" depends="init.package" description="stops server on cronus package">
+        <if>
+            <isset property="isWindows" />
+            <then>
+                <antcall target="build-common.cronus.command">
+                    <param name="param.service" value="${ivy.module}"/>
+                    <param name="param.option" value="${env.build}"/>
+                    <param name="param.script" value="shut"/>
+                    <param name="param.option.2" value="win"/>
+                </antcall>
+            </then>
+            <else>
+                <antcall target="build-common.cronus.command">
+                    <param name="param.service" value="${ivy.module}"/>
+                    <param name="param.option" value="${env.build}"/>
+                    <param name="param.script" value="shut"/>
+                </antcall>
+            </else>
+        </if>
+    </target>
+
+    <target name="cronus.activate" depends="init.package" description="activate server on cronus package">
+        <antcall target="build-common.cronus.command">
+        	<param name="param.service" value="${ivy.module}"/>
+            <param name="param.option" value="${env.build}"/>
+            <param name="param.script" value="activate"/>
+        </antcall>
+    </target>
+
+    <target name="cronus.install" depends="init.package" description="install server on cronus package">
+        <antcall target="build-common.cronus.command">
+        	<param name="param.service" value="${ivy.module}"/>
+            <param name="param.option" value="${env.build}"/>
+            <param name="param.script" value="install"/>
+        </antcall>
+    </target>
+
+
+</project>

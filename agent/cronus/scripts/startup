@@ -1,0 +1,95 @@
+#!/bin/bash
+
+SERVICE_NAME="agent"
+EXPECTED_ARGS=2
+INI=
+DAEMON="--daemon"
+
+# check the number of args
+if [[ $# > $EXPECTED_ARGS ]]
+then
+        echo "Usage: `basename $0` [.ini] [nodaemon]"
+        exit -1
+fi
+
+if [ "$1" == "nodaemon" ] || [ "$2" == "nodaemon" ] || [ "$3" == "nodaemon" ]; then
+    DAEMON=""
+fi
+
+if [ $# = 0 ] || [ "$1" == "nodaemon" ]; then
+	INI=prod.ini
+else
+	INI=$1.ini
+fi
+
+# get path to paster
+SERVICE_PATH="$(dirname $0)/../.."
+cd $SERVICE_PATH
+
+INSTALL_ROOT_DIR="$SERVICE_PATH/../../../../../../.."
+
+export PYTHON_EGG_CACHE="$INSTALL_ROOT_DIR/cronus/.python_egg_cache"
+
+CONF_PATH="$SERVICE_PATH/../../../manifests/active/${SERVICE_NAME}_config"
+
+if [[ ! -f ${CONF_PATH}/${INI} ]]; then
+    echo '[AGENT_MESSAGE] {"errorMsg": "Unable to find active link", "error": 200}'
+    exit -1
+fi
+
+CRONUS_PKG_DIR="$INSTALL_ROOT_DIR/cronus/software/packages"
+if [ -d $CRONUS_PKG_DIR ]; then
+        echo "Change packages directory permission to allow all"
+        chmod 777 $CRONUS_PKG_DIR
+fi
+
+# START Jeff 09 20 2012: may switch to old manifest by checking .recovery file. If the timestamp is more than 60 seconds older: delete the file and switch the symlink 
+
+RECOVERY_FILE_NAME="$SERVICE_PATH/../../../recovery.json"
+RECOVERY_TIME_THRESHOLD_SECONDS_LOWER=60
+RECOVERY_TIME_THRESHOLD_SECONDS_UPPER=180
+ACTIVE_MANIFEST_DIR="../../../manifests/active"
+AGENT_LOG_FILE="../../../manifests/active/agent/logs/agent.log"
+
+echo "Check existing of ${RECOVERY_FILE_NAME}"
+echo "[AGENT_ROLLBACK] At time: $(date +%Y-%m-%d--%T--%Z). Check existing of ${RECOVERY_FILE_NAME}" 1>>$AGENT_LOG_FILE
+if [ -f ${RECOVERY_FILE_NAME} ]; then
+    echo "[AGENT_ROLLBACK] Found .recovery file"
+    echo "[AGENT_ROLLBACK] At time: $(date +%Y-%m-%d--%T--%Z). Found .recovery file" 1>>$AGENT_LOG_FILE
+    # parse the json file to get the value based on key. WARNING: this way of parsing cannot handle null. must have db quote in values.
+    new_manifest=`cat ${RECOVERY_FILE_NAME} | python -mjson.tool | grep "newManifest" | sed 's/.*"newManifest": "\(.*\)",*/\1/g'`
+    old_manifest=`cat ${RECOVERY_FILE_NAME} | python -mjson.tool | grep "oldManifest" | sed 's/.*"oldManifest": "\(.*\)",*/\1/g'`
+    before_kill_time_stamp=`cat ${RECOVERY_FILE_NAME} | python -mjson.tool | grep "beforeKillTimeStamp" | sed 's/.*"beforeKillTimeStamp": "\(.*\)",*/\1/g'`
+    now_time_stamp=$(date +%s)
+    duration_from_kill_seconds=$(($now_time_stamp-$before_kill_time_stamp))
+    
+    old_manifest_dir="../../../manifests/$old_manifest"
+    if [ ${duration_from_kill_seconds} -ge ${RECOVERY_TIME_THRESHOLD_SECONDS_LOWER} ] && [ ${duration_from_kill_seconds} -le ${RECOVERY_TIME_THRESHOLD_SECONDS_UPPER} ] && [ -d ${old_manifest_dir} ]; then
+         echo "[AGENT_ROLLBACK] Has been ${duration_from_kill_seconds} seconds since the pkill that killed the old agent. In rollback unsafe duration window! Should rollback to the old manifest ${old_manifest}"
+         echo "switch back symlink: remove the current active and replace with the old one."
+         rm -rf $ACTIVE_MANIFEST_DIR
+         ln  -s $old_manifest_dir $ACTIVE_MANIFEST_DIR
+         echo "Done switch back symlink: now remove the .recovery file. Exit."
+         rm -rf $RECOVERY_FILE_NAME
+         # will write to the old agent's log: because the swtich symlink has been done.
+         echo "[AGENT_ROLLBACK] Rollbacked. At time: $(date +%Y-%m-%d--%T--%Z). Has been ${duration_from_kill_seconds} seconds since the pkill that killed the old agent. In rollback unsafe duration window!  .recovery file was removed. Has rollback to the old agent version: ${old_manifest}" 1>>$AGENT_LOG_FILE
+         exit 0
+    else
+         echo "[AGENT_ROLLBACK] Not rollback. At time: $(date +%Y-%m-%d--%T--%Z). Has been ${duration_from_kill_seconds} since the pkill that killed the old agent. Within safe duration or Old manifest folder ${old_manifest_dir} does not exist. Should keep trying the new manifest ${new_manifest}. Will not rollback."
+         echo "[AGENT_ROLLBACK] Not rollback. At time: $(date +%Y-%m-%d--%T--%Z). Has been ${duration_from_kill_seconds} since the pkill that killed the old agent. Within safe duration or Old manifest folder ${old_manifest_dir} does not exist. Should keep trying the new manifest ${new_manifest}. Will not rollback." 1>>$AGENT_LOG_FILE
+    fi
+fi
+
+# END Jeff 09 20 2012: switch to old manifest by checking .recovery file. 
+
+PYTHON_PATH="../../../manifests/active/python_package/bin/"
+$PYTHON_PATH/python $PYTHON_PATH/paster serve ${DAEMON} --pid-file=${SERVICE_NAME}.pid --log-file=logs/agent.log ${CONF_PATH}/${INI}
+
+sleep 1
+
+if [ ! -f ${SERVICE_NAME}.pid ]; then
+    echo "[AGENT_MESSAGE] {\"errorMsg\": \"Unable to find ${SERVICE_NAME}.pid\", \"error\": 200}"
+    exit -1
+fi
+
+exit 0

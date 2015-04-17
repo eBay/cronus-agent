@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ivy-module version="1.3">
+    <info organisation="${name.organisation}" module="python_package"/>
+    <configurations>
+        <conf name="main" description="main config"/>
+        <conf name="test" visibility="private" description="config for testing"/>
+    </configurations>
+    <publications>
+        <artifact name="python_package" type="cronus" conf="main"/>
+        <artifact name="python_package" type="cronus.prop" conf="main"/>
+    </publications>
+    <dependencies>
+
+        <!-- dependencies for test configuration -->
+    </dependencies>
+</ivy-module>

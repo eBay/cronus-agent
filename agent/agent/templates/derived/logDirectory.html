@@ -1,0 +1,21 @@
+<%inherit file='/base/agentNav.html' />
+
+<%def name="title()">LOG DIRECTORY</%def>
+
+
+
+<div class="container" >
+<h2>LOG FILES</h2>
+<%def name="buildRow(fileName)">
+    <p><a href=logs/${fileName}>*  ${fileName}</a></p>
+</%def>
+
+%for item in c.content:
+    ${buildRow(item)}
+%endfor
+
+</div>
+
+<%def name="footer()">
+
+</%def>

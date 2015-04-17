@@ -1,0 +1,9 @@
+#!/bin/bash
+# scrape uuid.log* for aggregated metrics, parameters ThreadName, DurationThreshold, ExecTimeThreshold
+dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+if [ "$4" == "raw" ]
+then
+cat "$dir/../../logs/uuid*" | sed 's/<br>/\n/g'  | sed 's/^\([0-9\/:]*\) \([0-9\/:]*\).*,\(.*\),{.*"executionMsec": \(.*\)}.*/\1\2 \3 \4 '"$2"' '"$3"'/' | sed 's/[\/:]//g' | grep $1 | awk 'BEGIN {ROW=0; print "{\"data\": ["} {if($3 > $4 && $5 != "" && $1 > $5) {if(ROW==0) {ROW=1; print $3} else {print ","$3}}} END { print "]}"}'
+else
+cat "$dir/../../logs/uuid*" | sed 's/<br>/\n/g'  | sed 's/^\([0-9\/:]*\) \([0-9\/:]*\).*,\(.*\),{.*"executionMsec": \(.*\)}.*/\1\2 \3 \4 '"$2"' '"$3"'/' | sed 's/[\/:]//g' | grep $1 | awk 'BEGIN {max=0} {if($3 > $4 && $5 != "" && $1 > $5) {if (max < $3) max = $3; total += $3; count++ }} END { print "{\"count\": "count,", \"max\": "max,", \"average\": "total/count "}"}'
+fi

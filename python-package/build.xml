@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="python" default="build">
+    <!-- load overriding dir.root if exists -->
+    <property file="dir.root.properties"/>
+    <!-- source common -->
+    <property name="dir.root" value="${basedir}/.."/>
+    <property name="dir.common" value="${dir.root}/build"/>
+    <property name="package-platform" value="unix"/>
+    <import file="${dir.common}/build-common.xml"/>
+
+    <!-- installs python environment -->
+    <target name="build.pyenv" depends="init.package">
+        <!-- reset target folder -->
+        <delete quiet="true" dir="${dir.target.dist}/${ivy.module}-${package-version}.${package-platform}"/>
+        <mkdir dir="${dir.target.dist}"/>
+        <!-- use virtualenv to create new python distribution -->
+        <exec executable="python" failonerror="true">
+            <arg value="virtualenv.py"/>
+            <arg value="--no-site-packages"/>
+            <arg value="${dir.target.dist}/${ivy.module}-${package-version}.${package-platform}"/>
+        </exec>
+        <!-- clean up temp artifacts -->
+        <delete quiet="true">
+            <fileset dir=".">
+                <include name="*.pyc"/>
+                <include name="*.egg"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <!-- installs additional python libraries -->
+    <target name="install.pylib" depends="init.package">
+        <property name="dir.python.bin" value="${dir.target.dist}/${ivy.module}-${package-version}.${package-platform}/bin"/>
+        <echo>installing ${lib}...</echo>
+        <exec executable="${dir.python.bin}/python" failonerror="true">
+            <arg value="${dir.python.bin}/easy_install"/>
+            <arg value="-a"/>
+            <arg value="${lib}"/>
+
+        </exec>
+    </target>
+    <target name="install.pylibs" depends="init.package">
+        <!-- load the lib property file -->
+        <property file="python-libs.properties"/>
+        <foreach list="${libs}" delimiter="," param="lib" target="install.pylib"/>
+    </target>
+
+    <!-- creates cronus package build -->
+    <target name="build" depends="build.pyenv,install.pylibs" description="build python distribution">
+        <!-- copy cronus package files -->
+        <exec executable="cp">
+            <arg value="-r"/>
+            <arg value="${basedir}/cronus"/>
+            <arg value="${dir.target.dist}/${ivy.module}-${package-version}.${package-platform}"/>
+        </exec>
+    </target>
+
+    <target name="package" depends="clean.dist,build,create.cronus" description="create cronus distribution package"/>
+
+    <target name="deploy.local" depends="init.package" description="deploys python package to local host">
+        <foreach param="param.service" target="build-common.deploy.cronus.local" list="agent,.orchestrator,.cronusdashboard">
+            <param name="param.service" value="${param.service}"/>
+            <param name="param.module" value="${ivy.module}"/>
+            <param name="param.version" value="${package-version}"/>
+            <param name="param.platform" value="${package-platform}"/>
+            <param name="param.package.cronus" value="${dir.target.dist}/${ivy.module}-${package-version}.${package-platform}.cronus"/>
+        </foreach>
+    </target>
+
+    <target name="publish.local" description="publishes to local repository">
+        <echo> Failed: Please use the target release.package instead </echo>
+        <fail/>
+    </target>
+
+    <target name="publish.shared" description="publishes to local repository">
+        <echo> Failed: Please use the target release.package instead </echo>
+        <fail/>
+    </target>
+</project>

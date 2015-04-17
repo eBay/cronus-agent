@@ -1,0 +1,4 @@
+#!/bin/bash
+# scrape exec_threadoutput.log for raw script output
+dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+awk '/'$1' output start/,/'$1' output end/' "$dir/../../logs/exec_threadoutput.log | sed 's/.*'"$1"' output start//g' | sed 's/'"$1"' output end//g'

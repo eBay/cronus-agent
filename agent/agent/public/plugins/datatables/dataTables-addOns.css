@@ -1,0 +1,237 @@
+@CHARSET "ISO-8859-1";
+
+div.client-search-clr {
+	display: inline;
+	margin: 13px 0px 0px -17px;
+	background: url('images/search_cross_icon.png') center center no-repeat;
+	padding: 5px;
+	cursor: pointer;
+}
+
+div.search-clr {
+	float: left;
+	margin: 13px 0px 0px -17px;
+	background: url('images/search_cross_icon.png') center center no-repeat;
+	padding: 5px;
+	cursor: pointer;
+}
+
+/*
+ * Filter buttons - start
+ */
+div#view-selector-section {
+	display: inline-block;
+	margin-top: 5px;
+	margin-left: 15%;
+	text-align: center;
+	overflow: hidden;
+}
+
+div#view-selector-section ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	float: left;
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: middle;
+	text-align: center;
+	font: normal 13px arial;
+	color: #333;
+}
+
+div#view-selector-section ul::after {
+	content: "";
+	display: block;
+}
+
+div#view-selector-section li,div#view-selector-section a {
+	float: left;
+}
+
+div#view-selector-section li {
+	background: url('images/ViewSele_Unselect_Bg.png') repeat-x;
+	line-height: 24px;
+	position: relative;
+	margin: 0;
+	padding: 0px 8px;
+	display: block;
+	cursor: pointer;
+}
+
+div#view-selector-section li.selected {
+	background: url('images/ViewSele_Select_Bg.png') repeat-x;
+	font-weight: bold;
+}
+
+div#view-selector-section li#left-border {
+	height: 24px;
+	padding: 0px 6px;
+	background: url('images/ViewSele_Unselect_Left_Bg.png') no-repeat;
+}
+
+div#view-selector-section li#left-border.selected {
+	background: url('images/ViewSele_Select_Left_Bg.png') no-repeat;
+}
+
+div#view-selector-section li#right-border {
+	height: 24px;
+	padding: 0px 6px;
+	background: url('images/ViewSele_Unselect_Right_Bg.png') no-repeat;
+}
+
+div#view-selector-section li#right-border.selected {
+	background: url('images/ViewSele_Select_Right_Bg.png') no-repeat;
+}
+
+div#view-selector-section li.divider {
+	height: 24px;
+	padding: 0px 1px 0px 0px;
+	background: url('images/ViewSele_Divider_Bg.png') no-repeat;
+}
+
+div#view-selector-section li.inner-item {
+	border-right: solid 1px #666;
+}
+
+/*
+ * Filter buttons - End
+ */
+
+/*
+ * Filter drop down menu - Start
+ */
+div#fmenu {
+	float: left;
+	position: relative;
+	margin: 6px;
+	color: #333;
+	font: normal 11px arial;
+}
+
+div#fmenu div#fmenu-head {
+	float: left;
+	width: 37px;
+	height: 22px;
+	background: url(images/filtermenu/filter_ico.png) no-repeat center right;
+}
+
+div#fmenu div#fmenu-head.pressed
+	{
+	background: url(images/filtermenu/filter_Press_ico.png) no-repeat center right;
+}
+
+div#fmenu div#fmenu-head img {
+	float: right;
+}
+
+div#fmenu div#fmenu-tip {
+	float: left;
+	height: 15px;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#FFF8E1));
+	background: -moz-linear-gradient(50% 75% 90deg,#FFF8E1, #FFFFFF);
+	margin: 0px 7px;
+	padding: 2px 0px;
+	border: solid 1px #70706f;
+	color: #666;
+	font: normal 9px verdana;
+}
+
+div#fmenu div#fmenu-tip-ptr {
+	background: url('images/filtermenu/pointer_ico.png')
+		0px 0px no-repeat;
+	height: 6px;
+	width: 7px;
+	float: left;
+	margin-left: -6px;
+	margin-top: 3px;
+}
+
+div#fmenu div#fmenu-tip span {
+	display: inline;
+	padding: 0px 3px;
+}
+	
+div#fmenu div#fmenu-tip #fmenu-clear {
+	color: #06c;
+	cursor: pointer;
+}
+
+div#fmenu-body.subhover {
+	width: 120px;
+	display: block;
+	z-index: 1000;
+	position: absolute;
+	top: 23px;
+	left: 0px;
+}
+
+div#fmenu-body {
+	display: none;
+}
+
+div#fmenu div.fmenu-col {
+	border: solid 1px #998675;
+	background: #fff;
+	box-shadow: 1px 1px 5px #002838;
+	padding: 10px;
+	font: bold 12px arial;
+}
+
+div#fmenu .fmenu-hr {
+	border: none;
+	border-top: 1px dotted #CCC;
+}
+
+div#fmenu ul,li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+div#fmenu ul li.fmenu-item {
+	padding: 4px 0px;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+div#fmenu ul li span.item-icon {
+	padding-left: 20px;
+}
+
+div#fmenu ul li span.item-icon.all {
+	background: url(images/filtermenu/all_ico.png) no-repeat center left;	
+}
+
+div#fmenu ul li span.item-icon.running {
+	background: url(images/filtermenu/running_ico.png) no-repeat center left;	
+}
+
+div#fmenu ul li span.item-icon.paused {
+	background: url(images/filtermenu/pause_ico.png) no-repeat center left;	
+}
+
+div#fmenu ul li span.item-icon.completed {
+	background: url(images/filtermenu/completed_ico.png) no-repeat center left;	
+}
+
+div#fmenu ul li span.item-icon.cancelled {
+	background: url(images/filtermenu/cancelled_ico.png) no-repeat center left;	
+}
+
+div#fmenu ul li span.item-icon.failed {
+	background: url(images/filtermenu/failed_ico.png) no-repeat center left;	
+}
+
+/*
+ * Filter drop down menu - End
+ */
+
+/* Export excel - icon */
+div.dt_import_excel {
+	width: 20px;
+	height: 25px;
+	/*background: url(images/Excel_Disb_icon.png) no-repeat center right;*/
+	float: right;
+	margin: 5px 5px 0px 0px;
+}

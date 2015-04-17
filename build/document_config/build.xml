@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="doc" default="create.local">
+<property name="local.dir.document" value="../../document/"/>
+<property name="share.dir.document" value="/cronus/document/"/>
+
+    <target name="create.local"  description="Generate Documents locally">
+        <mkdir dir="${local.dir.document}"/>
+        <mkdir dir="${local.dir.document}/agent"/>
+        <mkdir dir="${local.dir.document}/orchestrator"/>
+        <mkdir dir="${local.dir.document}/state_server"/>
+        <exec dir="." executable="doxygen">
+            <arg value="local.agent.conf"/>
+        </exec>
+        <exec dir="." executable="doxygen">
+            <arg value="local.orchestrator.conf"/>
+        </exec>
+        <exec dir="." executable="doxygen">
+            <arg value="local.state_server.conf"/>
+        </exec>
+    </target>
+
+    <target name="create.share"  description="Generate Documents AT SERVER MACHINE!!">
+        <mkdir dir="${share.dir.document}"/>
+        <mkdir dir="${share.dir.document}/agent"/>
+        <mkdir dir="${share.dir.document}/orchestrator"/>
+        <mkdir dir="${share.dir.document}/state_server"/>
+        <exec dir="." executable="doxygen">
+            <arg value="share.agent.conf"/>
+        </exec>
+        <exec dir="." executable="doxygen">
+            <arg value="share.orchestrator.conf"/>
+        </exec>
+        <exec dir="." executable="doxygen">
+            <arg value="share.state_server.conf"/>
+        </exec>
+    </target>
+
+    <target name="clean.local" description="Clear Documents locally">
+        <delete quiet="true" dir="${local.dir.document}/agent"/>
+        <delete quiet="true" dir="${local.dir.document}/orchestrator"/>
+        <delete quiet="true" dir="${local.dir.document}/state_server"/>
+    </target>
+
+    <target name="clean.share" description="Clear Documents AT SERVER MACHINE!!">
+        <delete quiet="true" dir="${share.dir.document}/agent"/>
+        <delete quiet="true" dir="${share.dir.document}/orchestrator"/>
+        <delete quiet="true" dir="${share.dir.document}/state_server"/>
+    </target>
+
+</project>

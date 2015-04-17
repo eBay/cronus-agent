@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript"
+	src="js/jquery.js">	
+</script>
+
+<link rel="stylesheet" type="text/css"
+	href="plugins/easyui/easyui-tabs-services.css?v=1.1" />
+
+<link rel="stylesheet" type="text/css"
+	href="css/jquery-ui-custom.css" />
+
+<script
+	src="plugins/easyui/jquery-easyui-min.js?v=1.3"
+	type="text/javascript"></script>
+
+<script type="text/javascript"
+	src="js/agent-viewer.js">	
+</script>
+
+<script type="text/javascript"
+	src="js/log-viewer.js">
+</script>
+<script type="text/javascript"
+	src="js/tooltip.js">	
+</script>
+
+<link rel="stylesheet" type="text/css"
+	href="css/agent-viewer.css">
+
+<link rel="stylesheet" type="text/css"
+	href="plugins/datatables/datatable-cloud.css?v=10">
+
+<script type="text/javascript"
+	src="plugins/datatables/jquery-dataTables.js?v=2">	
+</script>
+<script type="text/javascript"
+	src="plugins/datatables/dataTables-addOns.js?v=7"></script>
+
+<script type="text/javascript"
+	src="plugins/datatables/dataTables-pagination-cloud.js?v=4"></script>
+	<style type="text/css">
+
+	
+	 	#dhtmlgoodies_tooltip{
+		background-color:#EEE;
+		border:1px solid #000;
+		position:absolute;
+		display:none;
+		z-index:20000;
+		padding:2px;
+		font-size:0.9em;
+		-moz-border-radius:6px;	/* Rounded edges in Firefox */
+		font-family: "Trebuchet MS", "Lucida Sans Unicode", Arial, sans-serif;
+		
+	}
+	#dhtmlgoodies_tooltipShadow{
+		position:absolute;
+		background-color:#555;
+		display:none;
+		z-index:10000;
+		opacity:0.7;
+		filter:alpha(opacity=70);
+		-khtml-opacity: 0.7;
+		-moz-opacity: 0.7;
+		-moz-border-radius:6px;	/* Rounded edges in Firefox */
+	}
+	
+	
+	</style>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Stratus Agent Console</title>
+</head>
+<body>
+	<div id="ac-page">
+		<div id="ac-header">
+			<table>
+				<tr>
+					<td>
+						<div id="ac-stratus-logo">
+							<img
+								src="images/stratus_logo.jpg" />
+						</div>
+					</td>
+					<td><div id="ac-stratus-tagline">Stratus Agent Console</div></td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="ac-body">
+			<div id="tabs-services" class="easyui-tabs">
+				<div title="Stratus Agent Console">
+					<div id="ac-error-message" class="hidden"></div>
+					<div id="ac-quick-links"></div>
+					<div class="divider"></div>
+					<div id="accordian-panel">
+						<div id="ac-data"></div>
+					</div>
+				</div>
+				<div title="Log Files">
+					<div id="ac-log-error-message" class="hidden"></div>
+					<div class="divider"></div>
+					<div id="accordian-panel">
+						<div id="ac-log-view" class="dt_cloud"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="ac-footer">
+		
+		
+		</div>
+	</div>
+</body>
+</html>

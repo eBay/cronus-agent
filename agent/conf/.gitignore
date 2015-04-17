@@ -1,0 +1,5 @@
+*.ini
+data/
+
+# but
+!tmpl.ini

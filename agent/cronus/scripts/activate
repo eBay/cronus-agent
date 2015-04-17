@@ -1,0 +1,109 @@
+#!/bin/bash -ae
+
+# shutdown the old agent.
+# the idea is that something like SMF or daemon tools will restart using the new agent
+# this script will try to find the port for the agent and send a shutdown command
+
+CWD=`dirname $0`
+CRONUSAPP_PARENT_DIR=`cd $CWD/../../../../../../..; pwd`
+echo $CRONUSAPP_PARENT_DIR
+CRONUSAPP_HOME=$CRONUSAPP_PARENT_DIR/cronusapp_home
+CRONUSAPP_USER=cronusapp
+CRONUS_PKG_DIR=$CRONUSAPP_PARENT_DIR/packages
+
+echo "Attempting to kill all agents using pkill..."
+
+# set the user to cronus if there isn't a user set
+if [[ $USER == "" ]]; then
+    USER="cronus"
+fi
+
+if [[ $(uname) == "SunOS" ]]; then
+
+    # use pkill to kill all instances of the agent
+    PIDS=$(pgrep -u $USER -f python) || {
+        echo "noop" > /dev/null
+    }
+
+    for PID in $PIDS; do
+        RESULT=0
+        pargs -l $PID | grep agent.pid | grep agent_config || {
+            RESULT=1
+        }
+        if [[ $RESULT == 0 ]]; then
+            echo "Sending kill command to pid = $PID"
+            kill -9 $PID || {
+                echo '[AGENT_MESSAGE] {"errorMsg": "Error using pkill to kill agent processes", "error": 200}'
+            }
+        fi
+    done
+
+elif [[ $(uname) == "Linux" ]]; then
+
+    AGENT_PATTERN="python.*paster.*agent\.pid.*agent_config"
+
+    PIDS=$(pgrep -u $USER -f $AGENT_PATTERN) || {
+        echo "noop" > /dev/null
+    }
+
+    echo "Attempting to kill these pids(${PIDS})"
+
+    $(pkill -9 -u $USER -f $AGENT_PATTERN) || {
+        echo "Error killing $PIDS - $?"
+    }
+
+elif [[ $(uname) == "Darwin" ]]; then
+    PIDS=$(ps ax | grep agent.pid | grep agent_config | grep -v grep | awk '{ print $1 }')
+
+# Jeff 20130321: add comments on shutdown.
+AGENT_LOG_FILE="$CRONUSAPP_PARENT_DIR/service_nodes/agent/manifests/active/agent/logs/agent.log"
+echo "[AGENT_SUICIDE] At time: $(date +%Y-%m-%d--%T--%Z). Suicide in activate script. This is an expected behavior when upgrade agent. Will then rely on daemon/upstart to start agent..." 1>>$AGENT_LOG_FILE
+    for PID in $PIDS; do
+        echo "Sending kill command to pid = $PID"
+        kill -9 $PID || {
+            echo '[AGENT_MESSAGE] {"errorMsg": "Error using pkill to kill agent processes", "error": 200}'
+        }
+    done
+
+else
+    echo "[AGENT_MESSAGE] {\"errorMsg\": \"Error supported platform $(uname)\", \"error\": 201}"
+fi
+
+
+# create install_root/cronus/cronusapp_home if install_root/cronus exists
+if [ ! -d $CRONUSAPP_HOME_DIR ]; then
+    if [ -d $CRONUSAPP_PARENT_DIR ]; then
+        USERID=`getent passwd ${CRONUSAPP_USER} | cut -d: -f3`
+        GROUPID=`getent passwd ${CRONUSAPP_USER} | cut -d: -f4`
+        if [ ! -z $USERID ] && [ ! -z $GROUPID ]; then
+            mkdir $CRONUSAPP_HOME_DIR
+            sudo chown -R $USERID:$GROUPID $CRONUSAPP_HOME_DIR
+        else
+            echo "[AGENT_MESSAGE] {\"errorMsg\": \"USER/GROUP $CRONUSAPP_USER(${USERID}:${GROUPID}) does not exist, fail to create cronusapp_home folder\", \"error\": 200}"
+        fi
+    else
+        echo "[AGENT_MESSAGE] {\"errorMsg\": \"${CRONUSAPP_PARENT_DIR} does not exist, will not create cronusapp_home folder\", \"error\": 200}"
+
+    fi
+fi
+
+# replace *.ini $AGENT_ROOT with real cronus parent dir value
+pushd $CRONUSAPP_PARENT_DIR/service_nodes/agent/manifests/active/agent_config
+find . -name "*.ini" -print | xargs sed -i "s|_AGENTROOT_|${CRONUSAPP_PARENT_DIR}|g"
+popd
+
+#sleep 5 seconds to let system release port
+sleep 5;
+
+echo "...Done killing all agents using pkill"
+
+if [ -d $CRONUS_PKG_DIR ]; then
+	echo "Change packages directory permission to allow all"
+	sudo chmod 777 $CRONUS_PKG_DIR
+	if [ ! -d $CRONUSAPP_PARENT_DIR/service_nodes/agent/manifests/active/agent/agent/public/downloaded_packages ]; then
+		ln -s $CRONUS_PKG_DIR $CRONUSAPP_PARENT_DIR/service_nodes/agent/manifests/active/agent/agent/public/downloaded_packages
+	fi
+fi 
+
+exit 0
+

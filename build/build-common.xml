@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-common" default="test.test"
+    xmlns:ivy="antlib:org.apache.ivy.ant">
+
+      <condition property="user.prop.file" value="user-win.properties">
+          <and>
+              <not>  
+                  <isset property="user.prop.file"/>
+              </not>
+              <os family="windows" />
+          </and>
+      </condition>
+      <condition property="dir.python.bin" value="C:/Python26">
+          <and>
+              <not>  
+                  <isset property="dir.python.bin"/>
+              </not>
+              <os family="windows" />
+          </and>
+      </condition>
+	<condition property="isSet.user.prop.file">
+	     <isset property="user.prop.file" />
+	</condition>
+	<condition property="isWindows" value="true">
+	    <os family="windows" />
+	</condition>
+
+
+    <!-- =================================================================== -->
+    <!-- Init Targets   -->
+    <!-- =================================================================== -->
+    <target name="init.init-common" depends="init.default-properties,init.loadprop,init.load-user-env">
+        <!-- check for override properties -->
+        <condition property="isset.fileset.package.lib">
+            <isreference refid="fileset.package.lib"/>
+        </condition>
+
+        <!-- load additional ant tasks -->
+        <taskdef resource="net/sf/antcontrib/antlib.xml">
+            <classpath>
+                <fileset dir="${dir.lib.common}" includes="*.jar"/>
+            </classpath>
+        </taskdef>
+        <taskdef resource="checkstyletask.properties">
+            <classpath>
+                <fileset dir="${dir.lib.common}" includes="*.jar"/>
+            </classpath>
+        </taskdef>
+    </target>
+    <target name="init.default-properties">
+        <!-- default build env -->
+        <property name="env.build" value="dev"/>
+        <!-- default test env -->
+        <property name="env.test" value="unit"/>
+    </target>
+    <target name="init.loadprop">
+        <property file="${basedir}/local-deploy.properties"/>
+        <property file="${dir.common}/build-common.properties"/>
+
+        <!-- other dir assignment -->
+        <property name="dir.src.test" value="${dir.src.test-root}/${env.test}"/>
+        <property name="dir.target.classes.test" value="${dir.target}/classes-test-${env.test}"/>
+        <property name="dir.target.test-report" value="${dir.target}/test-report-${env.test}"/>
+    </target>
+    
+    <target name="init.load-override-user-env" if="${isSet.user.prop.file}">
+    	<echo>Overridding user properties from : ${dir.common}/${user.prop.file}</echo>
+        <property file="${dir.common}/${user.prop.file}" />
+    </target>
+    
+    <target name="init.load-user-env" depends="init.load-override-user-env" >
+    	<echo>Loading user properties from : ${dir.common}/user.properties</echo>
+        <property file="${dir.common}/user.properties" />
+    </target>
+    
+    <!-- ivy init -->
+    <target name="init.ivy">
+        <path id="classpath.ivy">
+            <fileset dir="${dir.lib.common}" includes="*.jar"/>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+            uri="antlib:org.apache.ivy.ant" classpathref="classpath.ivy"/>
+
+        <ivy:settings file="${file.ivysettings}"/>
+    </target>
+    <!-- =================================================================== -->
+    <!-- version control     -->
+    <!-- =================================================================== -->
+    <target name="loadversion" depends="init.init-common">
+        <property file="${file.version}"/>
+        <property name="package-version" value="${version.major}.${version.minor}.${buildnum}${revision}"/>
+        <echo>verson loaded: ${package-version}</echo>
+    </target>
+    <target name="saveversion" depends="loadversion">
+            <propertyfile file="${param.path}">
+            <entry key="version.major"  value="${version.major}" />
+            <entry key="version.minor" value="${version.minor}"/>
+            <entry key="version.build" value="${version.build}"/>
+            <entry key="version.buildnum.hudson" value="${buildnum}"/>
+            <entry key="version.revision" value="${revision}"/>
+        </propertyfile>
+    </target>
+    <target name="increment.version.build" description="increment version">
+        <propertyfile file="${file.version}">
+            <entry key="version.build" type="int" operation="+" default="0"/>
+        </propertyfile>
+    </target>
+    <target name="increment.version.minor" description="increment version">
+        <propertyfile file="${file.version}">
+            <entry key="version.minor" type="int" operation="+" default="0"/>
+            <entry key="version.build" type="int" value="0" default="0"/>
+        </propertyfile>
+    </target>
+    <target name="increment.version.major" description="increment version">
+        <propertyfile file="${file.version}">
+            <entry key="version.major" type="int" operation="+" default="1"/>
+            <entry key="version.minor" type="int" value="0" default="0"/>
+            <entry key="version.build" type="int" value="0" default="0"/>
+        </propertyfile>
+    </target>
+    <!-- =================================================================== -->
+    <!-- Clean Targets   -->
+    <!-- =================================================================== -->
+    <target name="clean.all" description="cleans all artifacts" depends="clean.lib">
+        <delete includeemptydirs="true" quiet="true" dir="${dir.target}"/>
+    </target>
+    <target name="clean.lib" description="clean project libs" depends="init.init-common">
+    </target>
+    <target name="clean.pyc" description="clean python .pyc files" >
+        <delete quiet="true" dir="${basedir}">
+            <include name="**/*.pyc"/>
+        </delete>
+    </target>
+    <target name="clean.compile.main" description="removes all compiled class files" depends="init.init-common">
+        <delete includeemptydirs="true" quiet="true" dir="${dir.target.classes.main}"/>
+    </target>
+    <target name="clean.compile.test" description="removes compiled test class files" depends="init.init-common">
+        <delete includeemptydirs="true" quiet="true" dir="${dir.target.classes.test}"/>
+    </target>
+    <target name="clean.logs" description="removes logs" depends="init.init-common">
+        <delete includeemptydirs="true" quiet="true" dir="${dir.target.logs}"/>
+    </target>
+    <target name="clean.javadoc" description="removes javadoc" depends="init.init-common">
+        <delete includeemptydirs="true" quiet="true" dir="${dir.target.javadoc}"/>
+    </target>
+    <target name="clean.dist" description="removes distribution artifacts" depends="init.init-common">
+        <delete includeemptydirs="true" quiet="true" dir="${dir.target.dist}/"/>
+    </target>
+    <!-- ivy -->
+    <target name="clean.repo.cache" description="cleans ivy cache folder" depends="init.init-common">
+        <delete includeemptydirs="true" quiet="true" dir="${dir.repo.cache}" />
+    </target>
+    <target name="clean.repo.local" description="cleans ivy local repo" depends="init.init-common">
+        <delete includeemptydirs="true" quiet="true" dir="${dir.repo.local}" />
+    </target>
+    <!-- =================================================================== -->
+    <!-- Dependency Management   -->
+    <!-- =================================================================== -->
+    <target name="depend.resolve" depends="init.init-common,init.ivy,clean.lib" description="resolve and retrieve dependencies.  Looks in local repo first, then in shared">
+        <property name="pattern.lib" value="[conf]/[artifact].[ext]"/>
+        <ivy:retrieve pattern="${dir.lib}/${pattern.lib}" />
+    </target>
+    <target name="depend.report" depends="init.init-common,init.ivy,depend.resolve" description="generates dependency report">
+        <ivy:report todir="${dir.target.depend-report}"/>
+    </target>
+    <!-- =================================================================== -->
+    <!-- Classpaths   -->
+    <!-- =================================================================== -->
+    <target name="init.classpaths">
+        <path id="classpath.compile.main">
+            <fileset dir="${dir.lib}">
+                <include name="**/*.jar"/>
+            </fileset>
+        </path>
+        <path id="classpath.compile.test">
+            <pathelement path="${dir.target.classes.main}"/>
+            <path refid="classpath.compile.main"/>
+        </path>
+        <path id="classpath.run.test">
+            <pathelement path="${dir.target.classes.test}"/>
+            <path refid="classpath.compile.test"/>
+            <!-- will look in build env specific conf first, then common -->
+            <!-- <pathelement path="${dir.conf}/${env.build}"/>
+            <pathelement path="${dir.conf}/common"/> -->
+            <pathelement path="${dir.test.resources}"/>
+        </path>
+    </target>
+    <!-- =================================================================== -->
+    <!-- Checkstyle   -->
+    <!-- =================================================================== -->
+    <target name="checkstyle" unless="nocheckstyle" depends="init.init-common,init.classpaths" description="verify checkstyle">
+        <checkstyle config="${dir.common}/cronus-checkstyle.xml" maxWarnings="0">
+            <fileset dir="${dir.src.main}" includes="**/*.java"/>
+        </checkstyle>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Compile   -->
+    <!-- =================================================================== -->
+    <target name="init.compile.main" depends="init.init-common,init.classpaths">
+        <mkdir dir="${dir.target.classes.main}"/>
+    </target>
+    <target name="init.compile.test" depends="init.init-common,init.classpaths">
+        <mkdir dir="${dir.target.classes.test}"/>
+    </target>
+    <target name="compile.main" depends="init.compile.main" description="compiles main classes.">
+        <antcall target="compile.impl" inheritRefs="true">
+            <param name="param.srcdir" value="${dir.src.main}"/>
+            <param name="param.destdir" value="${dir.target.classes.main}"/>
+            <param name="param.classpathref" value="classpath.compile.main"/>
+            <param name="param.java.version.source" value="${java.version.source}"/>
+            <param name="param.java.version.target" value="${java.version.target}"/>
+        </antcall>
+    </target>
+    <target name="compile.test" depends="init.compile.main,compile.main" description="compiles main classes.">
+        <antcall target="compile.impl" inheritRefs="true">
+            <param name="param.srcdir" value="${dir.src.test}"/>
+            <param name="param.destdir" value="${dir.target.classes.test}"/>
+            <param name="param.classpathref" value="classpath.compile.test"/>
+            <param name="param.java.version.source" value="${java.version.source}"/>
+            <param name="param.java.version.target" value="${java.version.target}"/>
+        </antcall>
+    </target>
+    <target name="compile.impl">
+        <depend
+            srcdir="${param.srcdir}"
+            destdir="${param.destdir}"
+            cache="${param.destdir}"
+            closure="yes"/>
+        <javac
+            srcdir="${param.srcdir}"
+            destdir="${param.destdir}"
+            classpathref="${param.classpathref}"
+            debug="${compile.debug}"
+            optimize="${compile.optimize}"
+            deprecation="${compile.deprecation}"
+            target="${param.java.version.target}"
+            source="${param.java.version.source}"
+            encoding="utf-8"
+            failonerror="yes"
+            includeAntRuntime="no"
+            fork="yes"/>
+    	<!-- Copy resources as well -->
+    	
+    	<copy todir="${param.destdir}">
+    	    <fileset dir="${param.srcdir}">
+    	      <exclude name="**/*.java"/>
+    	    </fileset>
+    	</copy>
+    	
+    	
+    </target>
+    <!-- =================================================================== -->
+    <!-- test targets   -->
+    <!-- =================================================================== -->
+    <target name="init.test" depends="init.init-common">
+        <mkdir dir="${dir.target.test-report}"/>
+    </target>
+    <target name="test" depends="init.test,compile.test" unless="notest" description="runs tests in this project. default to unit test.  specify with -Denv.test=unit|integration|performance">
+        <!--junit fork="yes" forkmode="once" printsummary="on" showoutput="no" haltonfailure="no" errorproperty="testfailed" failureproperty="testfailed">
+            <classpath>
+                <path refid="classpath.run.test"/>
+            </classpath>
+            <formatter type="plain"/>
+            <formatter type="xml"/>
+            <batchtest todir="${dir.target.test-report}">
+                <fileset dir="${dir.src.test}">
+                    <include name="**/Test*.java"/>
+                </fileset>
+            </batchtest>
+            <sysproperty key="${propname1}" value="${propvalue1}"/>
+            <sysproperty key="${propname2}" value="${propvalue2}"/>
+            <sysproperty key="${propname3}" value="${propvalue3}"/>
+        </junit>
+        <mkdir dir="${dir.target.test-report}/html"/>
+        <junitreport todir="${dir.target.test-report}/html">
+            <fileset dir="${dir.target.test-report}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report todir="${dir.target.test-report}/html"/>
+        </junitreport>
+        <fail message="tests failed.  see report in ${dir.target.test-report}/html" if="testfailed"/-->
+    </target>
+    <!-- =================================================================== -->
+    <!-- javadoc  -->
+    <!-- =================================================================== -->
+    <target name="javadoc" depends="init.init-common,init.classpaths" description="generates javadoc">
+        <javadoc
+            destdir="${dir.target.javadoc}"
+            sourcepath="${dir.src.main}"
+            classpathref="classpath.compile.main"
+            use="true"
+            notree="false"
+            nonavbar="false"
+            noindex="false"
+            splitindex="true"
+            version="true"
+            nodeprecatedlist="false"
+            link="true"/>
+    </target>
+    <!-- =================================================================== -->
+    <!-- package targets   -->
+    <!-- =================================================================== -->
+    <target name="init.fileset.package.lib" unless="isset.fileset.package.lib">
+        <!-- dependency includes.  default to everything in lib folder -->
+        <path id="fileset.package.lib">
+            <fileset dir="${dir.lib}">
+                <include name="**/*"/>
+            </fileset>
+        </path>
+    </target>
+    <target name="init.package" depends="init.init-common,init.fileset.package.lib,init.ivy,loadversion">
+        <mkdir dir="${dir.target.dist}"/>
+
+        <ivy:info file="${file.ivy}"/>
+        <property name="name.package" value="${ivy.module}.${package-version}"/>
+        <property name="name.package.jar" value="${name.package}.jar"/>
+        <property name="name.package-doc" value="${ivy.module}-doc.${package-version}.zip"/>
+    </target>
+    <target name="package.javadoc" depends="init.package,javadoc" description="packages javadoc into zip package">
+        <zip destfile="${dir.target.dist}/${name.package-doc}" basedir="${dir.target.javadoc}" />
+    </target>
+    <target name="package.jar" depends="init.package,test" description="builds jar distributable">
+        <antcall target="saveversion">
+            <param name="param.path" value="${dir.target.classes.main}/${name.version-file}"/>
+        </antcall>
+        <delete quiet="true" file="${dir.target.dist}/${name.package.jar}"/>
+        <jar jarfile="${dir.target.dist}/${name.package.jar}">
+            <fileset dir="${dir.target.classes.main}">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- cronus deploy targets   -->
+    <!-- =================================================================== -->
+    <target name="deploy.cronus.local" depends="init.package" description="deploys cronus package to local machine">
+        <echo>param.manifest: ${param.service}</echo>
+        <echo>param.module: ${param.module}</echo>
+        <echo>param.version: ${param.version}</echo>
+        <echo>param.platform: ${param.platform}</echo>
+        <echo>param.package.cronus: ${param.package.cronus}</echo>
+        <property name="dir.service" value="${dir.deploy.local}/service_nodes/${param.service}"/>
+        <property name="dir.packages" value="${dir.service}/installed-packages"/>
+        <property name="dir.package" value="${dir.packages}/${param.module}"/>
+        <property name="dir.package.version" value="${dir.package}/${param.version}.${param.platform}"/>
+        <property name="manifest.name" value="manifest-1.0"/>
+        <property name="dir.manifest" value="${dir.service}/manifests/${manifest.name}"/>
+        <property name="dir.manifest.package" value="${dir.manifest}/${param.module}"/>
+        <!-- create deploy folders -->
+        <mkdir dir="${dir.packages}"/>
+        <mkdir dir="${dir.manifest}"/>
+        <!-- create app folder -->
+        <mkdir dir="${dir.package}"/>
+        <!-- shutdown current if applicable -->
+        <antcall target="cronus.shutdown"/>
+        <!-- remove current symlink -->
+        <echo>deleting exsiting symlink ${param.module} in ${dir.manifest}...</echo>
+        <exec executable="unlink" dir="${dir.manifest}">
+            <arg value="${param.module}"/>
+        </exec>
+        <!-- delete existing folder if applicable, use rm because delete task is unaware of
+             symlinks -->
+        <exec executable="rm">
+            <arg value="-rf"/>
+            <arg value="${dir.package.version}"/>
+        </exec>
+        <!-- create app version folder -->
+        <delete quiet="true" dir="${dir.package.version}"/>
+        <mkdir dir="${dir.package.version}"/>
+        <!-- unpack cronus package to version folder -->
+        <!--<untar src="${param.package.cronus}" dest="${dir.package.version}" compression="gzip"/>-->
+        <echo>untarring ${param.package.cronus} to ${dir.package.version}</echo>
+	<if>
+            <isset property="isWindows" />
+            <then>
+                <!-- in windows, the file permissions need not be preserved. hence using untar task itself -->
+            	<untar src="${param.package.cronus}" dest="${dir.package.version}" compression="gzip"/>
+            </then>
+            <else>
+                <exec executable="tar" failonerror="true">
+    	            <arg value="-C"/>
+    	            <arg value="${dir.package.version}"/>
+    	            <arg value="-xvzf"/>
+    	            <arg value="${param.package.cronus}"/>
+    	        </exec>
+            </else>
+        </if>        
+        <!-- recreate symlink -->
+        <echo>creating symlink ${dir.manifest}/${param.module} -&gt; ../../packages/${param.module}/${param.version}.${param.platform}</echo>
+        <if>
+            <isset property="isWindows" />
+            <then>
+                <exec executable="python" failonerror="true">
+                    <arg value="${dir.common}/scripts/win32linkmngr.py"/>
+                    <arg value="-create"/>
+                    <arg value="${dir.manifest}/${param.module}"/>
+                    <arg value="../../installed-packages/${param.module}/${param.version}.${param.platform}"/>
+                </exec>
+            </then>
+            <else>
+                <exec executable="ln" dir="${dir.manifest}" failonerror="true">
+                    <arg value="-s"/>
+     	            <arg value="../../installed-packages/${param.module}/${param.version}.${param.platform}"/>
+      	            <arg value="${param.module}"/>
+      	        </exec>
+            </else>
+        </if>
+
+        <!-- relink the active manifest -->
+        <echo>creating symlink ${dir.service}/manifests/active -&gt; ${manifest.name}</echo>
+        <if>
+            <isset property="isWindows" />
+            <then>
+                <if>
+                    <available file="${dir.service}/manifests/active"/>
+                    <then>
+                        <exec executable="python" failonerror="false">
+                            <arg value="${dir.common}/scripts/win32linkmngr.py"/>            
+                            <arg value="-remove"/>
+                            <arg value="${dir.service}/manifests/active"/>
+                        </exec>   
+                    </then>
+                </if>
+                <exec executable="python" failonerror="true">
+                    <arg value="${dir.common}/scripts/win32linkmngr.py"/>
+                    <arg value="-create"/>
+                    <arg value="${dir.service}/manifests/active"/>
+                    <arg value="${manifest.name}"/>
+                </exec>
+            </then>
+            <else>
+                <exec executable="unlink" dir="${dir.service}/manifests/">
+    	            <arg value="active"/>
+    	        </exec>
+		<exec executable="ln" dir="${dir.service}/manifests/" failonerror="true">
+    	            <arg value="-s"/>
+    	            <arg value="${manifest.name}"/>
+    	            <arg value="active"/>
+    	        </exec>
+            </else>
+        </if>
+
+        <!-- run install command -->
+        <antcall target="cronus.install"/>
+        
+        <!-- run activate command -->
+        <antcall target="cronus.activate"/>
+    </target>
+    <!-- =================================================================== -->
+    <!-- cronus process control targets   -->
+    <!-- =================================================================== -->
+    <target name="cronus.install" depends="init.package" description="runs install command on installed cronus package">
+        <antcall target="build-common.cronus.command">
+            <param name="param.service" value=".${ivy.module}"/>
+            <param name="param.option" value="${env.build}"/>
+            <param name="param.script" value="install"/>
+        </antcall>
+    </target>
+    <target name="cronus.activate" depends="init.package" description="runs activate command on installed cronus package">
+        <antcall target="build-common.cronus.command">
+            <param name="param.service" value=".${ivy.module}"/>          
+            <param name="param.option" value="${env.build}"/>
+            <param name="param.script" value="activate"/>
+        </antcall>
+    </target>
+    <target name="cronus.startup" depends="init.package" description="starts server on cronus package">
+        <antcall target="build-common.cronus.command">
+            <param name="param.service" value=".${ivy.module}"/>
+            <param name="param.option" value="${env.build}"/>
+            <param name="param.script" value="startup"/>
+        </antcall>
+    </target>
+    <target name="cronus.shutdown" depends="init.package" description="stops server on cronus package">
+        <antcall target="build-common.cronus.command">
+            <param name="param.service" value=".${ivy.module}"/>
+            <param name="param.option" value="${env.build}"/>
+            <param name="param.script" value="shutdown"/>
+        </antcall>
+    </target>
+    
+    <target name="cronus.command" depends="init.package">
+        <property name="dir.manifest.package" value="${dir.deploy.local}/service_nodes/${param.service}/manifests/active/${ivy.module}"/>
+
+        <if>
+            <available file="${dir.manifest.package}/cronus/scripts/${param.script}"/>
+            <then>
+                <echo>invoking ${dir.manifest.package}/cronus/scripts/${param.script} ${param.option}</echo>
+                <if>
+                    <isset property="isWindows" />
+                    <then>
+                        <if>
+    			    <isset property="param.option.2" />
+    			    <then>
+    				<exec executable="sh" failonerror="true">
+    			            <arg value="${dir.manifest.package}/cronus/scripts/${param.script}" />
+    				    <arg value="${param.option}"/>
+    				    <arg value="${param.option.2}"/>    						
+    				</exec>
+    			    </then>
+			    <else>
+		        	<exec executable="sh" failonerror="true">
+		                    <arg value="${dir.manifest.package}/cronus/scripts/${param.script}" />
+		        	    <arg value="${param.option}"/>
+		        	</exec>									
+			    </else>
+    			</if>
+                    </then>
+                    <else>
+                        <exec executable="${dir.manifest.package}/cronus/scripts/${param.script}" failonerror="true">
+                            <arg value="${param.option}"/>
+                        </exec>
+                    </else>
+                </if> 
+                
+            </then>
+            <else>
+                <echo>${dir.manifest.package}/cronus/scripts/${param.script} does not exist, ignoring...</echo>
+            </else>
+        </if>
+
+        <property name="dir.manifest.package_config" value="${dir.deploy.local}/service_nodes/${param.service}/manifests/active/${ivy.module}_config"/>
+        <if>
+            <available file="${dir.manifest.package_config}/cronus/scripts/${param.script}"/>
+            <then>
+                <echo>invoking ${dir.manifest.package_config}/cronus/scripts/${param.script} ${param.option}</echo>
+                <exec executable="${dir.manifest.package_config}/cronus/scripts/${param.script}" failonerror="true">
+                    <arg value="${param.option}"/>
+                </exec>
+            </then>
+            <else>
+                <echo>${dir.manifest.package_config}/cronus/scripts/${param.script} does not exist, ignoring...</echo>
+            </else>
+        </if>
+        
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- publish targets   -->
+    <!-- =================================================================== -->
+    <target name="publish.local" depends="init.package" description="publish this project in local repository">
+        <antcall target="publish.impl">
+            <param name="param.status" value="integration"/>
+            <param name="param.overwrite" value="true"/>
+            <param name="param.resolver" value="local"/>
+            <param name="param.platform" value="${param.platform}"/>
+        </antcall>
+    </target>
+    <target name="publish.shared" depends="init.package" description="publish this project in shared repository.  ONLY TO BE USED BY BUILD MACHINE">
+        <antcall target="publish.impl">
+            <param name="param.status" value="release"/>
+            <param name="param.overwrite" value="true"/>
+            <param name="param.resolver" value="shared-publish"/>
+            <param name="param.platform" value="${param.platform}"/>
+        </antcall>
+    </target>
+    <target name="publish.impl">
+        <echo> Target dist is ${dir.target.dist} </echo>
+        <tstamp><format property="now" pattern="yyyyMMddHHmmss"/></tstamp>
+        <ivy:publish
+            resolver="${param.resolver}"
+            pubrevision="${package-version}"
+            pubdate="${now}"
+            status="${param.status}"
+            forcedeliver="true"
+            overwrite="${param.overwrite}">
+            <artifacts pattern="${dir.target.dist}/[artifact]-${package-version}.${param.platform}.[ext]"/>
+        </ivy:publish>
+    </target>
+
+    <target name="release.package" depends="init.package" description="copy the package to the repo">
+      <mkdir dir="${dir.repo.shared}"/>
+      <delete dir="${dir.repo.shared}/com.domain.sub/${ivy.module}/${package-version}"/>
+      <copy todir="${dir.repo.shared}/com.domain.sub/${ivy.module}/${package-version}">
+          <fileset dir="${dir.target.dist}">
+              <include name="*.cronus"/>
+              <include name="*.cronus.prop"/>
+              <include name="*.zip"/>
+          </fileset>
+      </copy>
+    </target>
+	
+    <target name="release.latest.package" depends="release.package" description="copy the package to the repo">
+      <mkdir dir="${dir.repo.shared}"/>
+      <delete dir="${dir.repo.shared}/com.domain.sub/${ivy.module}/LATEST"/>
+      <copy todir="${dir.repo.shared}/com.domain.sub/${ivy.module}/LATEST">
+          <fileset dir="${dir.target.dist}">
+              <include name="*.cronus"/>
+              <include name="*.cronus.prop"/>
+              <include name="*.zip"/>
+          </fileset>
+      </copy>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Untils   -->
+    <!-- =================================================================== -->
+    <target name="remove.whitespace" depends="init.init-common">
+        <apply executable="${dir.common}/scripts/remove_whitespace.sh">
+            <fileset dir="${dir.src.main}">
+                <include name="**/*.java"/>
+                <include name="**/*.py"/>
+                <include name="**/*.xml"/>
+                <include name="**/*.ini"/>
+            </fileset>
+            <fileset dir="${basedir}">
+                <include name="*.xml"/>
+                <include name="**/shutdown"/>
+                <include name="**/startup"/>
+                <include name="**/install"/>                
+                <include name="**/activate"/>
+            </fileset>
+            <fileset dir="${dir.src.test}">
+                <include name="**/*.java"/>
+                <include name="**/*.py"/>
+                <include name="**/*.xml"/>
+                <include name="**/*.ini"/>
+            </fileset>
+        </apply>
+    </target>
+    <target name="make.config" depends="init.package">
+        <exec executable="${dir.python.bin}/python">
+            <arg value="${dir.common}/scripts/make_config.py"/>
+            <arg value="${ivy.module}"/>
+        </exec>
+    </target>
+    <target name="process.target.dist" depends="init.init-common">
+        <echo>process tar dist ${dir.target.dist} </echo>   
+        <delete includeemptydirs="true">
+            <fileset dir="${dir.target.dist}" defaultexcludes="false">
+                <include name="**/.svn/"/>
+            </fileset>
+        </delete> 
+    </target>
+
+    <target name="create.cronus" depends="init.init-common">
+        <delete quiet="true">
+            <fileset dir="${dir.target.dist}">
+                <include name="**/*.cronus"/>
+                <include name="**/*.cronus.prop"/>
+            </fileset>
+        </delete>
+    	<if>
+            <isset property="isWindows" />
+            <then>
+                <apply executable="sh" failonerror="true">
+                    <arg value="${dir.common}/scripts/make_cronus.sh" />
+                    <dirset dir="${dir.target.dist}">
+                        <include name="*"/>
+                    </dirset>
+                </apply>
+            </then>
+            <else>
+                <apply executable="${dir.common}/scripts/make_cronus.sh" failonerror="true">
+                    <dirset dir="${dir.target.dist}">
+                        <include name="*"/>
+                    </dirset>
+                </apply>
+            </else>
+        </if>
+    </target>
+</project>

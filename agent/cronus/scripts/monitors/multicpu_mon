@@ -1,0 +1,79 @@
+#!/bin/bash
+
+OS_NAME=$(uname -o)
+if [ "$OS_NAME" == "Cygwin" ]; then
+      echo '[AGENT_MESSAGE]{"progress": 100, "result":"App monitor script unsupported in running win32 platform"}'
+      exit 0
+fi
+
+OS=$(uname -a)
+# USER is field number in iostat command as counted with nawk
+# SYS is field number in iostat command 
+# WAIT is field number in iostat command 
+# IN is field number in iostat command 
+HEADER=$(vmstat 1 1 | sed -n 2p)
+set $HEADER FOO
+
+CNT=1
+WAIT=
+for X in $HEADER ; do
+    case "$X" in
+        in)  IN=$CNT ;;
+	us)  USER=$CNT ;;
+	sy)  SYS=$CNT ;;
+	wa)  WAIT=$CNT ;;
+    esac
+    let CNT+=1
+    shift
+done
+
+case $OS in
+    SunOS*5.10)
+        OS=sol10
+	;;
+    *Ubuntu*)
+        OS=ubuntu
+        ;;
+    Linux*.el[56]*)
+        OS=rh
+        ;;
+    Linux*)
+        OS=linux
+	;;
+esac
+
+E=
+/bin/echo -e "hoho" | grep -- -e > /dev/null || E="-e" 
+
+printit() {
+case "$2" in            # add quotes for text
+    [0-9]*)
+        Q=''
+        ;;
+    *)
+        Q='"'
+        ;;
+esac
+/bin/echo $E '{"key":"'$1'", "value":'$Q$2$Q'}'"$3\c"
+}
+
+set $(vmstat 1 2 | tail -1 )
+
+eval USERNUM="\${$USER}"
+eval SYSTEMNUM="\${$SYS}"
+eval INTNUM="\${$IN}"
+
+if [ "$WAIT" != "" ] ; then
+    WAITVAL=$(eval  echo "\${$WAIT}")
+    WAITNUM=$WAITVAL
+else
+    WAITVAL=NA
+    WAITNUM=0
+fi
+/bin/echo $E '[AGENT_MESSAGE] {"progress":100,"result":['"\c"
+
+printit cpuUser $USERNUM ,
+printit cpuSystem  $SYSTEMNUM ,
+printit cpuWaitIO $WAITVAL ,
+printit cpuTotal "$(( $USERNUM + $SYSTEMNUM + $WAITNUM ))" ,
+printit cpuInterrupts $INTNUM "]}\n[AGENT_MESSAGE_END]"

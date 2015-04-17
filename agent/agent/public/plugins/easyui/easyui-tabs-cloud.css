@@ -1,0 +1,62 @@
+@import url(easyui-tabs.css);
+
+.easyui-tabs .tabs {
+	border-color: #ADD6D6;
+}
+
+.easyui-tabs .tabs span.tabs-title {
+	font: bold 13px arial;
+	color: #fff;
+}
+
+.easyui-tabs .tabs li {
+	border-color: #ADD6D6;
+}
+
+.easyui-tabs .tabs li.tabs-selected {
+	border: 1px solid #ADD6D6;
+	border-bottom: 1px solid white;
+}
+
+.easyui-tabs .tabs li {
+	background: -webkit-gradient(linear, 100% 100%, 100% 50%, from(#80BDD0),
+		to(#589CB1) );
+	background: -moz-linear-gradient(50% 50% 90deg, #589CB1, #80BDD0);
+	display: initial;
+}
+
+.easyui-tabs .tabs li a.tabs-inner,.easyui-tabs .tabs li a.tabs-inner:hover
+	{
+	background: initial;
+}
+
+.easyui-tabs .tabs li a.tabs-inner {
+	display: initial;
+}
+
+.easyui-tabs .tabs li.tabs-selected a {
+	background: none;
+}
+
+.easyui-tabs .tabs li.tabs-selected span.tabs-title {
+	color: #666;
+}
+
+.easyui-tabs .tabs li.tabs-selected,.easyui-tabs .tabs li.tabs-selected a.tabs-inner:hover
+	{
+	background: -moz-linear-gradient(100% 99% 90deg, #FFFFFF, #E3EEF2);
+	background: -webkit-gradient(linear, 0% 0%, 0% 53%, from(#E3EEF2),
+		to(#FFFFFF) );
+}
+
+.easyui-tabs .tabs li a.tabs-close {
+	background: url('images/CloseTab_icon.png') no-repeat center center;
+	width: 15px;
+	height: 15px;
+	top: 3px;
+	right: 1px;
+}
+
+.easyui-tabs .tabs-panels {
+	border-color: #ADD6D6;
+}

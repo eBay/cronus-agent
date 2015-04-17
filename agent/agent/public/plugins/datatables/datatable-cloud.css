@@ -1,0 +1,318 @@
+@import url(datatable-table.css);
+
+@import url(dataTables-pagination-cloud.css);
+
+@import url(dataTables-addOns.css);
+
+/********************************************
+ * Div Wrapper
+ ********************************************/
+div.dt_cloud div.dataTables_scrollBody,div.dataTables_scrollHead {
+	width: 100% !important;
+}
+
+div.dt_cloud div.dataTables_scrollBody {
+	/*min-height: 300px;*/
+}
+
+div.dt_cloud div.dataTables_wrapper {
+	min-height: 20px;
+	position: relative;
+	border: 1px solid #DFDFDF;
+}
+
+div.dt_cloud input {
+	border: 1px solid #ccc;
+	font: 1em Arial, Helvetica, Verdana, sans-serif;
+}
+
+/* Turn off the default highlighting of the input elements */
+div.dt_cloud input:focus,div.dt_cloud select:focus {
+	outline: none;
+	background: none;
+	border: 1px solid #ccc;
+}
+
+div.dt_cloud_filter {
+	width: 100%;
+	height: 35px;
+	/*background: url('images/Search_Bg.png') repeat center center; */
+	background: #f2f2f2;
+}
+
+div.dt_cloud div.dataTables_filter {
+	width: auto;
+	height: 25px;
+	padding-top: 5px;
+}
+
+/* Left align the search box*/
+div.dt_cloud div.dataTables_filter {
+	float: left;
+	text-align: left;
+	font: 11px Arial;
+	color: #7d7d7d;
+	padding-left: 5px;
+}
+
+div.dt_cloud  div.dataTables_filter input {
+	width: 250px;
+	height: 24px;
+	border-radius: 40px;
+	-moz-border-radius: 40px;
+	padding: 0 0 0 3px;
+	background: white;
+	box-shadow: inset -3px 3px 5px 0px #ccc;
+	-moz-box-shadow: inset -3px 3px 5px 0px #ccc;
+}
+
+div.dt_filter_dropdown {
+	width: 50px;
+	height: 35px;
+	background: transparent url(images/FilterDisb_icon.png) no-repeat center
+		left;
+	float: left;
+	margin: 0px 0px 0px 10px;
+}
+
+/************************
+ * Table specific css
+ ************************/
+table.dt_cloud {
+	width: 100%;
+	clear: both;
+	border-collapse: collapse;
+	font: normal 12px arial;
+	color: #333333;
+}
+
+table.dt_cloud thead tr {
+	background: url(images/GridHdr_Bg.png); 
+}
+
+table.dt_cloud thead th {
+	height: 27px;
+	max-height: 27px;
+	min-height: 27px;
+	padding-left: 10px;
+	border: 1px solid #7dbfc4;
+	color: #333333;
+	font: 12px Arial;
+	cursor: pointer;
+	text-align: left;
+}
+
+table.dt_cloud tbody tr {
+	height: 27px;
+}
+
+table.dt_cloud tr.odd {
+	background-color: #fff;
+}
+
+table.dt_cloud tr.even {
+	background-color: #f8f8f8;
+}
+
+table.dt_cloud td {
+	padding: 3px 5px 3px 10px;
+}
+
+table.dt_cloud tr.odd td.sorting_1 {
+	background-color: #fff;
+}
+
+table.dt_cloud tr.even td.sorting_1 {
+	background-color: #f8f8f8;
+}
+
+/** Link decoration */
+table.dt_cloud a {
+	text-decoration: none;
+	color: #007fd8;
+	cursor: pointer;
+}
+
+/** Row highlighted on hover */
+table.dt_cloud tbody tr.row_highlighted,table.dt_cloud tbody tr.row_highlighted td.sorting_1
+	{
+	background-color: #d0e6f5;
+}
+
+/** Row selected on click - selected overrides highlight */
+table.dt_cloud tbody tr.row_selected, table.dt_cloud tbody tr.row_selected.row_highlighted, 
+	table.dt_cloud tbody tr.row_selected td.sorting_1 {	
+	background-color: #6596C7;
+	font-weight: bold;
+	color: #fff;
+}
+
+table.dt_cloud tbody tr.row_selected td, table.dt_cloud tbody tr.row_selected.row_highlighted td, 
+	table.dt_cloud tbody tr.row_selected td.sorting_1 {	
+	border-width: 1px 0px 0px 0px;
+	border-style: inset;
+	border-color: #476A8C;
+}
+
+table.dt_cloud tbody tr.row_selected td:first-child {
+	border-width: 1px 0px 0px 1px;
+}
+
+/* White font for links under highlighted rows */
+table.dt_cloud tbody tr.row_selected a,table.dt_cloud tbody tr.row_selected td.sorting_1 a
+	{
+	font-weight: bold;
+	color: #fff;
+}
+
+table.dt_cloud td.center {
+	text-align: center;
+}
+
+/***************************************
+ * Table footer
+ ***************************************/
+div.dt_cloud_footer {
+	width: 100%;
+	height: 20px;
+	clear: both;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-top: solid 1px #C8C8C8;
+	/*background: url('images/Pg_Bg.png') repeat center center;*/
+	background: #f2f2f2;
+}
+
+div.dt_cloud div.dataTables_info {
+	width: auto;
+	float: left;
+	padding: 2px 5px 0px 5px;
+	font: bold 11px arial;
+	color: #333;
+}
+
+/* Items per page */
+div.dataTables_length {
+	width: 17%;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables sorting
+ */
+table.dt_cloud thead th.sorting_asc {
+	background: url('images/SortUp_icon.png') no-repeat center right,
+		url('images/Sorted_Bg.png') repeat;
+}
+
+table.dt_cloud thead th.sorting_desc {
+	background: url('images/SortDown_icon.png') no-repeat center right,
+		url('images/Sorted_Bg.png') repeat
+}
+
+table.dt_cloud thead th.sorting {
+	background: url('images/Sort_neutral.png') 99% 50% no-repeat;
+}
+
+table.dt_cloud thead th.sorting_asc_disabled {
+	background: url('images/SortUp_Disb_icon.png') 99% 50% no-repeat;
+}
+
+table.dt_cloud thead th.sorting_desc_disabled {
+	background: url('images/SortDown_Disb_icon.png') 99% 50% no-repeat;
+}
+
+/* --- Package Datatables --- */
+
+/* #dt_packages > thead.th, #dt_packages > tbody.td { */
+#dt_packages th, #dt_packages td {
+	border: 1px solid  #DFDFDF; /* #7DBFC4; */	
+}
+
+#dt_packages {
+	border-collapse: collapse;
+	border-spacing: 1px;
+	border-color: #DFDFDF; /*#7DBFC4;*/
+}
+
+#dt_packages td.verEdge {
+	border-left : 1px solid   #DFDFDF; /* #7DBFC4; */
+	border-right : 1px solid  #DFDFDF; /* #7DBFC4; */	
+}
+
+td.details {
+	background-color: #D0E6F5;
+	border: 1px solid  #DFDFDF; /*#7DBFC4; */
+	border-top: 0;
+}
+
+td div.removeMinHeight {
+	/*min-height : 0 !important; */
+}
+
+#package-bundle-links a{
+	font-weight: bold;
+	color: #0000FF;
+	text-decoration: underline;
+}
+
+#package-bundle-links a.activeLink {
+	 text-decoration: none;
+	 cursor: default;
+	 pointer-events: none;
+	 color: #000;
+}
+
+#package-bundle-links {
+	margin: 5px 0;
+}
+
+#dt_packages table.package-detail-view {
+	border-collapse: collapse;
+	background: #FFF !important;
+	border-spacing: 1px;	
+}
+
+#dt_packages table.package-detail-view thead tr {
+	background : url("images/Pg_Bg.png") repeat scroll center;
+	font-weight: bold;
+	color: #000;
+	border-bottom: 0;
+}
+
+#dt_packages table.package-detail-view thead th {
+	white-space : nowrap;
+}
+
+#dt_packages table.package-detail-view tbody td {
+	border: 1px solid #C8C8C8;
+}
+
+#dt_packages table.package-detail-view-summary {
+	width: 100%;
+	color: #000;
+	border: 0;	
+}
+
+#dt_packages table.package-detail-view-summary td.label {
+	width : 1px; 
+	white-space : nowrap;
+	font-weight: bold;	
+}
+
+#dt_packages table.package-detail-view-summary td.errorMessage {
+	text-align: center;
+}
+
+/* Fixes misaligned columns issue with JQuery Datatables */
+div.dataTables_scroll { 
+	clear: both; 
+}
+
+div.dataTables_processing {
+	padding: 14px 0 2px 15px;
+	border: 10px solid #9CC;
+	color: #333;
+	font: 12px Arial;
+	border-radius: 10px;
+	background: #FFF url('images/loadingBig_ico.gif') 15px 10px no-repeat;
+}

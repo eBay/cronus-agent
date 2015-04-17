@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# The script monitors following things about the memory/swap of a system
+#       Memory Total
+#       Memory Used
+#       Memory Buffers
+#       Memory Cached
+#       Swap Total
+#       Swap Used
+#	PageIn Per Sec
+#	PageOut Per Sec
+# Should there be error in reading any of the above parameters there will be "\"NA\""
+# in result.
+
+OUTPUT='[AGENT_MESSAGE]{"progress": 100, "result":['
+KEY=
+VALUE=
+
+TIMEOUT=5
+TIMEINTERVAL=10
+
+OS_NAME=$(uname -o)
+if [ "$OS_NAME" == "Cygwin" ]; then
+      echo '[AGENT_MESSAGE]{"progress": 100, "result":"App monitor script unsupported in running win32 platform"}'
+      exit 0
+fi
+
+convertJSON()
+{
+	KEY=$1
+	VALUE=$2
+	if [[ -z "$VALUE" ]]; then
+		VALUE=\"NA\"
+	fi
+	OUTPUT=$OUTPUT"{\"key\":\"$KEY\",\"value\": "$VALUE"},"
+}
+
+
+# Calculate Swap
+SWAP=`free  -k 2> /dev/null| grep -i swap | awk '{print $2,$3}' `
+SWAPTOTAL=`echo $SWAP | awk '{print $1}'`
+SWAPUSED=`echo $SWAP | awk '{print $2}'`
+convertJSON swapTotal ${SWAPTOTAL:=\"NA\"} 
+convertJSON swapUsed ${SWAPUSED:=\"NA\"}
+
+# Calculate Memory
+MEM=`free  -k 2> /dev/null | grep -i mem | awk '{print $2,$3,$6,$7}' 2>/dev/null`
+MEMTOTAL=`echo $MEM | awk '{print $1}'`
+MEMUSED=`echo $MEM | awk '{print $2}'`
+MEMBUFFERS=`echo $MEM | awk '{print $3}'`
+MEMCACHED=`echo $MEM | awk '{print $4}'`
+ACTUALMEMUSED=`expr $MEMUSED - $MEMBUFFERS - $MEMCACHED` 
+convertJSON memoryTotal ${MEMTOTAL:=\"NA\"} 
+convertJSON memoryUsed ${ACTUALMEMUSED:=\"NA\"}
+convertJSON memoryBuffers ${MEMBUFFERS:=\"NA\"}
+convertJSON memoryCached ${MEMCACHED:=\"NA\"}
+
+
+# Find the pages Paged in and out per sec
+PAGEACTIVITY1=`vmstat -s 2> /dev/null| grep 'pages paged' | awk '{print $1}'`
+sleep 1
+PAGEACTIVITY2=`vmstat -s 2> /dev/null | grep 'pages paged' | awk '{print $1}'`
+
+PAGEIN1=`echo $PAGEACTIVITY1 | awk '{print $1}'`
+PAGEIN2=`echo $PAGEACTIVITY2 | awk '{print $1}'`
+PAGEOUT1=`echo $PAGEACTIVITY1 | awk '{print $2}'`
+PAGEOUT2=`echo $PAGEACTIVITY2 | awk '{print $2}'`
+
+# Silence the error if there is one
+exec 3>&2-
+
+
+PAGEINSEC=$(($PAGEIN2 - $PAGEIN1)) 
+PAGEOUTSEC=$(($PAGEOUT2 - $PAGEOUT1)) 
+
+convertJSON pageInSec ${PAGEINSEC:=\"NA\"}
+convertJSON pageOutSec ${PAGEOUTSEC:=\"NA\"}
+
+# Restore the original stderr
+exec 2>&3-
+
+
+# Finally output the result
+
+OUTPUT=`echo $OUTPUT | sed -e s/,$//g`"]}[AGENT_MESSAGE_END]"
+echo $OUTPUT

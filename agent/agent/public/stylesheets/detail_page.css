@@ -1,0 +1,25 @@
+
+
+body#detail_page div#accordion_filter div#selection_panel{
+	display: inline-block;
+	width: 800px;
+	-moz-column-count:2; /* Firefox */
+	-webkit-column-count:2; /* Safari and Chrome */
+	column-count:2;
+
+	-moz-column-gap:40px; /* Firefox */
+	-webkit-column-gap:40px; /* Safari and Chrome */
+	column-gap:40px;
+}
+
+body#detail_page div#accordion_filter div#time_range_btn_group{
+	display: inline-block;
+	width: 800px;
+	-moz-column-count:2; /* Firefox */
+	-webkit-column-count:2; /* Safari and Chrome */
+	column-count:2;
+
+	-moz-column-gap:40px; /* Firefox */
+	-webkit-column-gap:40px; /* Safari and Chrome */
+	column-gap:40px;
+}

@@ -1,0 +1,54 @@
+===================
+create the python binary
+===================
+
+1) download & untar python.2.6.5
+2) apply this patch to setup.py
+$ diff setup.py Python-2.6.5/setup.py
+621,622c621
+<                               '/usr/contrib/ssl/include/',
+<                               '/usr/sfw/include/'
+---
+>                               '/usr/contrib/ssl/include/'
+634,635c633
+<                                       '/usr/contrib/ssl/lib/',
+<                                       '/usr/sfw/lib/',
+---
+>                                       '/usr/contrib/ssl/lib/'
+
+3) ./configure --prefix=/home/tayu/python
+4) make
+5) make install
+
+===================
+setup easy install
+===================
+
+1) download setuptools
+2) setup the path to python 2.6
+3) sh sh setuptools-0.6c9-py2.4.egg --prefix=/home/tayu/python
+
+==================
+add modules
+==================
+
+1) ~/python/bin/python ~/python/bin/easy_install <modules needed to install>
+
+=================
+install pyOpenSSL
+=================
+
+1) download openssl package using browers (curl & wget doesn't work) http://launchpad.net/pyopenssl/main/0.11/+download/pyOpenSSL-0.9.tar.gz
+2) untar
+3) ../python_package-2.6.5_3.solaris/bin/python setup.py build_ext -I/usr/sfw/include/ -L/usr/sfw/lib/
+4) ../python_package-2.6.5_3.solaris/bin/python setup.py build
+5) ../python_package-2.6.5_3.solaris/bin/python setup.py install
+
+================
+create cronus pkg
+================
+
+1) export PATH=/usr/xpg4/bin/:$PATH
+2) ~/proj/build/script/make_cronus.sh python_package-2.6.5_3.solaris
+
+

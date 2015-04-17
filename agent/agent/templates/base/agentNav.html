@@ -1,0 +1,64 @@
+## -*- coding: utf-8 -*-
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>${self.title()}</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="/stylesheets/bootstrap.css" rel="stylesheet"
+	media="screen">
+<link href="/stylesheets/docs.css" rel="stylesheet">
+    ${self.head()}
+</head>
+<body>
+    ${self.header()}
+    ${next.body()}
+    ${self.footer()}
+</body>
+</html>
+
+<%def name="title()">Welcome</%def>
+<%def name="head()">
+
+</%def>
+<%def name="header()">
+
+	<div class="navbar navbar-inverse navbar-static-top">
+		<div class="navbar-inner">
+		<a class="brand" href="/agent/ValidateInternals.html">Cronus Agent</a>
+			<div class="container" >
+				
+			<div class="nav-collapse">
+				<ul class="nav">
+					<li 
+ 					 %if c.menuTab == 'MENU_TAB_VI':
+					 	       class="active"
+					 %endif
+ 					><a href="/agent/ValidateInternals.html">Home</a></li>
+					
+					<li  
+ 					 %if c.menuTab == 'MENU_TAB_LOGS':
+					 	       class="active"
+					 %endif
+ 					><a href="/agent/logs">Logs</a></li> 					 					
+					<li><a  target="_blank"  href="/agent/api">APIs</a></li>	
+					<li><a  target="_blank"  href="/agent/modules">Modules</a></li>	
+					<li><a  target="_blank"  href="/services/agent/action/getmetadata">Metadata</a></li>	
+					<li><a  target="_blank"  href="/services">Services</a></li>
+					<li><a  target="_blank"  href="/agent/monitors">Monitors</a></li>
+					
+				</ul>
+			</div>
+
+			</div>
+		</div>
+
+	</div>
+
+
+</%def>
+<%def name="footer()">
+
+</%def>

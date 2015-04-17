@@ -1,0 +1,86 @@
+{
+    "agent": {
+        "test": {
+            "handler_agent": {"level": "ERROR"},
+            "handler_console": {"level": "ERROR"},
+            "handler_exec": {"level": "ERROR"},
+            "handler_monitor": {"level": "ERROR"},
+            "handler_uuid": {"level": "ERROR"},
+            "handler_agentapi": {"level": "ERROR"},
+            "handler_gc": {"level": "ERROR"},
+            "handler_execoutput": {"level": "ERROR"},
+            "handler_console": {"level": "ERROR"},
+            "server:main": {
+                "port": 10020,
+                "ssl_pem": null
+            },
+            "app:main": {
+                "monitor_check_timeinterval": 2,
+                "basicauth.local": false,
+                "agent_root": "%(here)s/../target/test_dir/cronus/software",
+                "repo_root": "%(here)s/../target/test_dir/cronus/software/packages",
+                "threadMgr_garbage_freq": 0.1,
+                "threadMgr_thread_age": 360,
+                "packageMgr_garbage_freq": 60,
+                "packageMgr_package_maxsize": 0.0,
+                "packageMgr_package_mount": "%(here)s/../target/test_dir",
+                "seederMgr_garbage_freq": 0.2,
+                "seederMgr_seed_age": 10,
+                "exec_thread_sleep_time": 0.1,
+                "exec_thread_timeout": 10,
+                "exec_thread_progress_timeout": 5,
+                "agent_thread_timeout": 10,
+                "agent_thread_progress_timeout": 5,
+                "set debug": null,
+                "publisher_host":"xyz.com",
+                "env":"cronusagentenv",
+                "use_app_user": false,
+                "health_disk_usage_percent_threshold": 90,
+                "health_agent_file_descriptor_usage_threshold": 500,
+                "appinitdelay": 15
+            }
+        },
+        "prod": {
+        	"app:main": {
+        		"auto_restart_enabled": true
+        	}
+        },
+        "qa": {
+            "handler_agent": {"level": "DEBUG"},
+            "handler_console": {"level": "ERROR"},
+            "server:main": {
+                "port": 13020,
+                "ssl_pem": "cronus/server.pem"
+            },
+            "app:main": {
+                "publisher_host":"xyz.com",
+                "env":"cronusagentenv"
+            }
+        },
+        "dev": {
+            "handler_agent": {"level": "DEBUG"},
+            "handler_console": {"level": "DEBUG"},
+            "handler_exec": {"level": "DEBUG"},
+            "handler_monitor": {"level": "DEBUG"},
+            "handler_uuid": {"level": "DEBUG"},
+            "handler_agentapi": {"level": "DEBUG"},
+            "handler_gc": {"level": "DEBUG"},
+            "handler_execoutput": {"level": "DEBUG"},
+            "handler_console": {"level": "DEBUG"},
+            "server:main": {
+                "port": 11020,
+                "ssl_pem": null
+            },
+            "app:main": {
+                "basicauth.local": false,
+                "agent_root": "%(here)s/../../local-deploy",
+                "repo_root": "%(here)s/../../local-deploy/packages",
+                "threadMgr_garbage_freq": 0.1,
+                "threadMgr_thread_age": 360,
+                "set debug": null,
+                "publisher_host":"xyz.com",
+                "env":"cronusagentenv"
+           }
+        }
+    }
+}

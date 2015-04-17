@@ -1,0 +1,20 @@
+## -*- coding: utf-8 -*-
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>${self.title()}</title>
+    ${self.head()}
+</head>
+<body>
+    ${self.header()}
+    ${next.body()}
+    ${self.footer()}
+</body>
+</html>
+
+<%def name="title()">Welcome</%def>
+<%def name="head()"></%def>
+<%def name="header()"><a name="top"></a></%def>
+<%def name="footer()"><p><a href="#top">Top ^</a></p></%def>

@@ -1,0 +1,124 @@
+/* Pagination wrapper div */
+div.paging_cloudStyle {
+	width: auto;
+	float: none;
+	font: 11px Arial;
+	color: #757575;
+}
+
+div.paging_cloudStyle div{
+	margin-top: 2px;
+}
+div.paging_cloudStyle div,div.paging_cloudStyle span {
+	float: left;
+}
+
+/* Total records element */
+div.paging_cloudStyle div.paginate_total_records {
+	width: 100px;
+	text-align: left;
+	margin-left: 3px;
+	color: #333;
+	font: 11px Arial bold;
+}
+
+/* Refresh button */
+div.paging_cloudStyle  div.paginate_refresh_button {
+	width: 25%;
+	padding: 8px;
+	border-left: solid 1px #333;
+	background: transparent url(images/refresh_Disable_icon.png) 2%
+		no-repeat;
+}
+
+div.paging_cloudStyle div.paginate_refresh_button.active {
+    background: url('images/Refresh_icon.png') no-repeat scroll 2% 50% transparent;
+    cursor: pointer;
+}
+
+/* Pagination buttons */
+div.paging_cloudStyle span.paginate_button {
+	height: 10px;
+	width: 12px;
+	margin-top: 3px;
+}
+
+div.paging_cloudStyle span.first.paginate_button {
+	background: url('images/PgFirstEnbld.png') no-repeat center center;
+	cursor: pointer;
+}
+
+div.paging_cloudStyle span.first.paginate_button.paginate_button_disabled
+	{
+	background: url('images/PgFirstDisb.png') no-repeat center center;
+	cursor: default;
+}
+
+div.paging_cloudStyle span.previous.paginate_button {
+	background: url('images/PgPrevEnbld.png') no-repeat center center;
+	cursor: pointer;
+}
+
+div.paging_cloudStyle span.previous.paginate_button.paginate_button_disabled
+	{
+	background: url('images/PgPrevDisb.png') no-repeat center center;
+	cursor: default;
+}
+
+div.paging_cloudStyle span.next.paginate_button {
+	background: url('images/PgNextEnbld.png') no-repeat center center;
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+div.paging_cloudStyle span.next.paginate_button.paginate_button_disabled
+	{
+	background: url('images/PgNextDisb.png') no-repeat center center;
+	cursor: default;
+}
+
+div.paging_cloudStyle span.last.paginate_button {
+	background: url('images/PgLastEnbld.png') no-repeat center center;
+	cursor: pointer;
+}
+
+div.paging_cloudStyle span.last.paginate_button.paginate_button_disabled
+	{
+	background: url('images/PgLastDisb.png') no-repeat center center;
+	cursor: default;
+}
+/* Pagination numbered navigation */
+div.paging_cloudStyle span.navigationList span {
+	height: 12px;
+	width: 7px;
+	margin: 1px 4px 1px 4px;
+	font: 11px arial;
+	color: #007fd8;
+}
+
+div.paging_cloudStyle span.navigationList span.paginate_button {
+	cursor: pointer;
+}
+
+div.paging_cloudStyle span.navigationList span.paginate_active {
+	cursor: default;
+	color: black;
+	font: 11px Arial bold;
+}
+
+/* Display length selector */
+div.dt_cloud div.dataTables_length,div.dt_cloud div.dataTables_length label
+	{
+	float: right;
+}
+
+div.dt_cloud div.dataTables_length label,div.dt_cloud div.dataTables_length select
+	{
+	font: 11px arial;
+	color: #333;
+}
+
+div.dt_cloud div.dataTables_length select {
+	vertical-align: baseline;
+	margin: 2px 5px 2px 0px;
+}

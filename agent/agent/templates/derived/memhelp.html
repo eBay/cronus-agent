@@ -1,0 +1,779 @@
+<%inherit file='/base/index.html' />
+
+<%def name="title()">Cronus Agent Memory Profiler Help</%def>
+<%def name="head()"><h1>Memory Profiler Help</h1></%def>
+
+
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 6253 2010-03-02 00:24:53Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: left }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="how-to-use-guppy-heapy-for-tracking-down-memory-usage">
+<h1 class="title">How to use guppy/heapy for tracking down memory usage</h1>
+
+<p>This is a work in progress. It will grow a bit and it may not be
+entirely accurate everywhere.</p>
+<div class="section" id="tutorial-of-sorts">
+<h1>Tutorial of sorts</h1>
+<p>All this was done on a checkout of
+<a class="reference external" href="mailto:marienz&#64;gentoo.org-20060908111256-540d8fb3db5b337e">marienz&#64;gentoo.org-20060908111256-540d8fb3db5b337e</a>, you should be able
+to check that out and follow along using something like:</p>
+<pre class="literal-block">
+bzr revert -rrevid:marienz&#64;gentoo.org-20060908111256-540d8fb3db5b337e
+</pre>
+<p>in a pkgcore branch.</p>
+<p>Heapy is powerful but has a learning curve. Problems are the
+documentation (<a class="reference external" href="http://guppy-pe.sourceforge.net/heapy_Use.html">http://guppy-pe.sourceforge.net/heapy_Use.html</a> among
+others) is a bit unusual and there are various dynamic importing and
+other tricks in use that mean things like dir() are less helpful than
+they are on more &quot;normal&quot; python objects. This document's main purpose
+is to show you how to ask heapy various kinds of questions. It may or
+may not show a few cases where pkgcore uses more memory than it should
+too.</p>
+<p>First, get an x86. Heapy currently does not like 64 bit archs much.</p>
+<p>Emerge it:</p>
+<pre class="literal-block">
+emerge guppy
+</pre>
+<p>Fire up an interactive python prompt, set stuff up:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from guppy import hpy
+&gt;&gt;&gt; from pkgcore.config import load_config
+&gt;&gt;&gt; c = load_config()
+&gt;&gt;&gt; hp = hpy()
+</pre>
+<p>Just to show how annoying heapy's internal tricks are:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; dir(hp)
+['__doc__', '__getattr__', '__init__', '__module__', '__setattr__', '_hiding_tag_', '_import', '_name', '_owner', '_share']
+&gt;&gt;&gt; help(hp)
+Help on class _GLUECLAMP_ in module guppy.etc.Glue:
+
+_GLUECLAMP_ = &lt;guppy.heapy.Use interface at 0x-484b8554&gt;
+</pre>
+<p>This object is your &quot;starting point&quot;, but as you can see the
+underlying machinery is not giving away any useful usage instructions.</p>
+<p>Do everything that allocates some memory but is not the problem you
+are tracking down now. Then do:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; hp.setrelheap()
+</pre>
+<p>Everything allocated before this call will not be in the data sets you
+get later.</p>
+<p>Now do your memory-intensive thing:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; l = list(x for x in c.repo[&quot;portdir&quot;] if x.data)
+</pre>
+<p>Keep an eye on system memory consumption. You want to use up a lot but
+not all of your system ram for nicer statistics. The python process
+was eating about 109M res in top when the above stuff finished, which
+is pretty good (for my 512mb ram box).</p>
+<pre class="literal-block">
+&gt;&gt;&gt; h = hp.heap()
+</pre>
+<p>The fun one. This object is basically a snapshot of what's reachable
+in ram (minus the stuff excluded through setrelheap earlier) which you
+can do various fun tricks with. Its str() is a summary:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; h
+Partition of a set of 1449133 objects. Total size = 102766644 bytes.
+ Index  Count   %     Size   % Cumulative  % Kind (class / dict of class)
+     0 985931  68 46300932  45  46300932  45 str
+     1  24681   2 22311624  22  68612556  67 dict of pkgcore.ebuild.ebuild_src.package
+     2  49391   3 21311864  21  89924420  88 dict (no owner)
+     3 115974   8  3776948   4  93701368  91 tuple
+     4 152181  11  3043616   3  96744984  94 long
+     5  36009   2  1584396   2  98329380  96 weakref.KeyedRef
+     6  11328   1  1540608   1  99869988  97 dict of pkgcore.ebuild.ebuild_src.ThrowAwayNameSpace
+     7  24702   2   889272   1 100759260  98 types.MethodType
+     8  11424   1   851840   1 101611100  99 list
+     9  24681   2   691068   1 102302168 100 pkgcore.ebuild.ebuild_src.package
+&lt;54 more rows. Type e.g. '_.more' to view.&gt;
+</pre>
+<p>(You might want to keep an eye on ram usage: heapy made the process
+grow another dozen mb here. It gets painfully slow if it starts
+swapping, so if that happens reduce your data set).</p>
+<p>Notice the &quot;Total size&quot; in the top right: about 100M. That's what we
+need to compare later numbers with.</p>
+<p>So here we can see that (surprise!) we have a ton of strings in
+memory. We also have various kinds of dicts. Dicts are treated a bit
+specially: the &quot;dict of pkgcore.ebuild.ebuild_src.package&quot; simply
+means &quot;all the dicts that are __dict__ attributes of instances of that
+class&quot;. &quot;dict (no owner)&quot; are all the dicts that are not used as
+__dict__ attribute.</p>
+<p>You probably guessed what you can use &quot;index&quot; for:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; h[0]
+Partition of a set of 985931 objects. Total size = 46300932 bytes.
+ Index  Count   %     Size   % Cumulative  % Kind (class / dict of class)
+     0 985931 100 46300932 100  46300932 100 str
+</pre>
+<p>Ok, that looks pretty useless, but it really is not. The &quot;sets&quot; heapy
+gives you (like &quot;h&quot; and &quot;h[0]&quot;) are a bunch of objects, grouped
+together by an &quot;equivalence relation&quot;. The default one (with the crazy
+name &quot;Clodo&quot; for &quot;Class or dict owner&quot;) groups together all objects of
+the same class and dicts with the same owner. We can also partition
+the sets by a different equivalence relation. Let's do a silly example
+first:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; h.bytype
+Partition of a set of 1449133 objects. Total size = 102766644 bytes.
+ Index  Count   %     Size   % Cumulative  % Type
+     0 985931  68 46300932  45  46300932  45 str
+     1  85556   6 45226592  44  91527524  89 dict
+     2 115974   8  3776948   4  95304472  93 tuple
+     3 152181  11  3043616   3  98348088  96 long
+     4  36009   2  1584396   2  99932484  97 weakref.KeyedRef
+     5  24702   2   889272   1 100821756  98 types.MethodType
+     6  11424   1   851840   1 101673596  99 list
+     7  24681   2   691068   1 102364664 100 pkgcore.ebuild.ebuild_src.package
+     8  11328   1   317184   0 102681848 100 pkgcore.ebuild.ebuild_src.ThrowAwayNameSpace
+     9    408   0    26112   0 102707960 100 types.CodeType
+&lt;32 more rows. Type e.g. '_.more' to view.&gt;
+</pre>
+<p>As you can see this is the same thing as the default view, but with
+all the dicts lumped together. A more useful one is:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; h.byrcs
+Partition of a set of 1449133 objects. Total size = 102766644 bytes.
+ Index  Count   %     Size   % Cumulative  % Referrers by Kind (class / dict of class)
+     0 870779  60 43608088  42  43608088  42 dict (no owner)
+     1  24681   2 22311624  22  65919712  64 pkgcore.ebuild.ebuild_src.package
+     2 221936  15 20575932  20  86495644  84 dict of pkgcore.ebuild.ebuild_src.package
+     3 242236  17  8588560   8  95084204  93 tuple
+     4      6   0  1966736   2  97050940  94 dict of weakref.WeakValueDictionary
+     5  36009   2  1773024   2  98823964  96 dict (no owner), dict of
+                                             pkgcore.ebuild.ebuild_src.package, weakref.KeyedRef
+     6  11328   1  1540608   1 100364572  98 pkgcore.ebuild.ebuild_src.ThrowAwayNameSpace
+     7  26483   2   800432   1 101165004  98 list
+     8  11328   1   724992   1 101889996  99 dict of pkgcore.ebuild.ebuild_src.ThrowAwayNameSpace
+     9      3   0   393444   0 102283440 100 dict of pkgcore.repository.prototype.IterValLazyDict
+&lt;132 more rows. Type e.g. '_.more' to view.&gt;
+</pre>
+<p>What this does is:</p>
+<ul class="simple">
+<li>for every object, find all its referrers</li>
+<li>Classify those referrers using the &quot;Clodo&quot; relation you saw earlier</li>
+<li>Create a set of those classifiers of referrers. That means a set of
+things like &quot;tuple, dict of someclass&quot;, <em>not</em> of actual referring objects.</li>
+<li>Group together all the objects with the same set of classifiers of referrers.</li>
+</ul>
+<p>So now we know that we have a lot of objects referenced <em>only</em> by one
+or more dicts (still not very useful) and also a lot of them
+referenced by one &quot;normal&quot; dict, referenced by the dict of (meaning
+&quot;an attribute of&quot;) ebuild_src.package, and referenced by a WeakRef.
+Hmm, I wonder what those are. But let's store this view of the data
+first, since it took a while to generate (&quot;_&quot; is a feature of the
+python interpreter, it's always the last result):</p>
+<pre class="literal-block">
+&gt;&gt;&gt; byrcs = _
+&gt;&gt;&gt; byrcs[5]
+Partition of a set of 36009 objects. Total size = 1773024 bytes.
+ Index  Count   %     Size   % Cumulative  % Referrers by Kind (class / dict of class)
+     0  36009 100  1773024 100   1773024 100 dict (no owner), dict of
+                                             pkgcore.ebuild.ebuild_src.package, weakref.KeyedRef
+</pre>
+<p>Erm, yes, we knew that already. If you look in the top right of the
+table you can see it is still grouping the items by the kind of their
+referrer, which is not very useful here. To get more information we
+can change what they are grouped by:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; byrcs[5].byclodo
+Partition of a set of 36009 objects. Total size = 1773024 bytes.
+ Index  Count   %     Size   % Cumulative  % Kind (class / dict of class)
+     0  36009 100  1773024 100   1773024 100 str
+&gt;&gt;&gt; byrcs[5].bysize
+Partition of a set of 36009 objects. Total size = 1773024 bytes.
+ Index  Count   %     Size   % Cumulative  % Individual Size
+     0  10190  28   489120  28    489120  28        48
+     1   7584  21   394368  22    883488  50        52
+     2   7335  20   322740  18   1206228  68        44
+     3   3947  11   221032  12   1427260  80        56
+     4   3364   9   134560   8   1561820  88        40
+     5   1903   5   114180   6   1676000  95        60
+     6    877   2    56128   3   1732128  98        64
+     7    285   1    19380   1   1751508  99        68
+     8    451   1    16236   1   1767744 100        36
+     9     57   0     4104   0   1771848 100        72
+</pre>
+<p>This took the set of objects with that odd set of referrers and
+redisplayed them grouped by &quot;clodo&quot;. So now we know they're all
+strings. Most of them are pretty small too. To get some idea of what
+we're dealing with we can pull some random examples out:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; byrcs[5].byid
+Set of 36009 &lt;str&gt; objects. Total size = 1773024 bytes.
+ Index     Size   %   Cumulative  %   Representation (limited)
+     0       80   0.0        80   0.0 'media-plugin...re20051219-r1'
+     1       76   0.0       156   0.0 'app-emulatio...4.20041102-r1'
+     2       76   0.0       232   0.0 'dev-php5/ezc...hemaTiein-1.0'
+     3       76   0.0       308   0.0 'games-misc/f...wski-20030120'
+     4       76   0.0       384   0.0 'mail-client/...pt-viewer-0.8'
+     5       76   0.0       460   0.0 'media-fonts/...-100dpi-1.0.0'
+     6       76   0.0       536   0.0 'media-plugin...gdemux-0.10.4'
+     7       76   0.0       612   0.0 'media-plugin...3_pre20051219'
+     8       76   0.0       688   0.0 'media-plugin...3_pre20051219'
+     9       76   0.0       764   0.0 'media-plugin...3_pre20060502'
+&gt;&gt;&gt; byrcs[5].byid[0].theone
+'media-plugins/vdr-streamdev-server-0.3.3_pre20051219-r1'
+</pre>
+<p>A pattern emerges! (sets with one item have a &quot;theone&quot; attribute with
+the actual item, all sets have a &quot;nodes&quot; attribute that returns an
+iterator yielding the items).</p>
+<p>We could have used another heapy trick to get a better idea of what
+kind of string this was:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; byrcs[5].byvia
+Partition of a set of 36009 objects. Total size = 1773024 bytes.
+ Index  Count   %     Size   % Cumulative  % Referred Via:
+     0      1   0       80   0        80   0 &quot;['cpvstr']&quot;, '.key', '.keys()[23147]'
+     1      1   0       76   0       156   0 &quot;['cpvstr']&quot;, '.key', '.keys()[12285]'
+     2      1   0       76   0       232   0 &quot;['cpvstr']&quot;, '.key', '.keys()[12286]'
+     3      1   0       76   0       308   0 &quot;['cpvstr']&quot;, '.key', '.keys()[16327]'
+     4      1   0       76   0       384   0 &quot;['cpvstr']&quot;, '.key', '.keys()[17754]'
+     5      1   0       76   0       460   0 &quot;['cpvstr']&quot;, '.key', '.keys()[19079]'
+     6      1   0       76   0       536   0 &quot;['cpvstr']&quot;, '.key', '.keys()[21704]'
+     7      1   0       76   0       612   0 &quot;['cpvstr']&quot;, '.key', '.keys()[23473]'
+     8      1   0       76   0       688   0 &quot;['cpvstr']&quot;, '.key', '.keys()[24239]'
+     9      1   0       76   0       764   0 &quot;['cpvstr']&quot;, '.key', '.keys()[3070]'
+&lt;35999 more rows. Type e.g. '_.more' to view.&gt;
+</pre>
+<p>Ouch, 36009 total rows for 36009 objects. What this did is similar to
+what &quot;byrcs&quot; did: for every object in the set it determined how they
+can be reached through their referrers, then groups objects that can
+be reached in the same ways together. Unfortunately it is grouping
+everything reachable as a dictionary key differently, so this is not
+very useful.</p>
+<p>XXX WTF XXX</p>
+<p>It is not likely this accomplishes anything, but let's assume we want
+to know if there are any objects in this set <em>not</em> reachable as the
+&quot;key&quot; attribute. Heapy can tell us (although this is <em>very</em> slow...
+there might be a better way but I do not know it yet):</p>
+<pre class="literal-block">
+&gt;&gt;&gt; nonkeys = byrcs[5] &amp; hp.Via('.key').alt('&lt;')
+&gt;&gt;&gt; nonkeys.byrcs
+hp.Nothing
+</pre>
+<p>(remember &quot;hp&quot; was our main entrance into heapy, the object that gave
+us the set of all objects we're interested in earlier).</p>
+<p>What does this do? &quot;hp.Via('.key')&quot; creates a &quot;symbolic set&quot; of &quot;all
+objects reachable <em>only</em> as the 'key' attribute of something&quot; (it's a
+&quot;symbolic set&quot; because there are no actual objects in it). The &quot;alt&quot;
+method gives us a new symbolic set of everything reachable via &quot;less
+than&quot; this way. We then intersect this with our set and discover there
+is nothing left.</p>
+<p>A similar construct that does not do what we want is:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; nonkeys = byrcs[5] &amp; ~hp.Via('.key')
+</pre>
+<p>The &quot;~&quot; operator inverts the symbolic set, giving a set matching
+everything not reachable <em>exactly</em> as a &quot;key&quot; attribute. The key word
+here is &quot;exactly&quot;: since everything in our set was also reachable in
+two other ways this intersection matches everything.</p>
+<p>Ok, let's get back to the stuff actually eating memory:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; h[0].byrcs
+Index  Count   %     Size   % Cumulative  % Referrers by Kind (class / dict of class)
+    0 670791  68 31716096  68  31716096  68 dict (no owner)
+    1 139232  14  6525856  14  38241952  83 tuple
+    2 136558  14  6042408  13  44284360  96 dict of pkgcore.ebuild.ebuild_src.package
+    3  36009   4  1773024   4  46057384  99 dict (no owner), dict of
+                                            pkgcore.ebuild.ebuild_src.package, weakref.KeyedRef
+    4   1762   0   107772   0  46165156 100 list
+    5    824   0    69476   0  46234632 100 types.CodeType
+    6    140   0    31312   0  46265944 100 function, tuple
+    7    194   0    11504   0  46277448 100 dict of module
+    8     30   0     6284   0  46283732 100 dict of type
+    9     55   0     1972   0  46285704 100 dict of module, tuple
+</pre>
+<p>Remember h[0] gave us all str objects, so this is all string objects
+grouped by the kind(s) of their referrers. Also notice index 3 here is
+the same set of stuff we saw earlier:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; h[0].byrcs[3] ^ byrcs[5]
+hp.Nothing
+</pre>
+<p>Most operators do what you would expect, &amp; intersects for example.</p>
+<p>&quot;We have a lot of strings in dicts&quot; is not that useful either, let's
+see if we can narrow that down a little:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; h[0].byrcs[0].referrers.byrcs
+Partition of a set of 44124 objects. Total size = 18636768 bytes.
+ Index  Count   %     Size   % Cumulative  % Referrers by Kind (class / dict of class)
+     0  24681  56 12834120  69  12834120  69 dict of pkgcore.ebuild.ebuild_src.package
+     1  19426  44  5371024  29  18205144  98 dict (no owner)
+     2      1   0   393352   2  18598496 100 dict of pkgcore.repository.prototype.IterValLazyDict
+     3      1   0     6280   0  18604776 100 __builtin__.set
+     4      1   0     6280   0  18611056 100 dict of module, guppy.heapy.heapyc.RootStateType
+     5      1   0     6280   0  18617336 100 dict of pkgcore.ebuild.eclass_cache.cache
+     6      1   0     6280   0  18623616 100 dict of
+                                             pkgcore.repository.prototype.PackageIterValLazyDict
+     7      4   0     5536   0  18629152 100 type
+     8      4   0     3616   0  18632768 100 dict of type
+     9      1   0     1672   0  18634440 100 dict of module, dict of os._Environ
+</pre>
+<p>(Broken down: h[0].byrcs[0] is the set of all str objects referenced
+only by dicts, h[0].byrcs[0].referrers is the set of those dicts, and
+the final .byrcs displays those dicts grouped by <em>their</em> referrers)</p>
+<p>Keep an eye on the size column. We have over 12M worth of just dicts
+(not counting the stuff in them) referenced only as attribute of
+ebuild_src.package. If we include the stuff kept alive by those dicts
+we're talking about a big chunk of the 100MB total here:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; t = _
+&gt;&gt;&gt; t[0].domisize
+61269552
+</pre>
+<p>60M out of our 100M would be deallocated if we killed those dicts. So
+let's ask heapy what dicts that are:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; t[0].byvia
+Partition of a set of 24681 objects. Total size = 12834120 bytes.
+ Index  Count   %     Size   % Cumulative  % Referred Via:
+     0  24681 100 12834120 100  12834120 100 &quot;['data']&quot;
+</pre>
+<p>(it is easy to get confused by the &quot;byrcs&quot; view of our &quot;t&quot;. t[0] is
+<em>not</em> a bunch of &quot;dict of ebuild_src.package&quot;. It is a bunch of dicts
+with strings in them, namely those that are <em>referred to</em> by the dict
+of ebuild_src.package, and not by anything else. So the byvia output
+means those dicts with strings in them are all &quot;data&quot; attributes of
+ebuild_src.package instances).</p>
+<p>(sidenote: earlier we saw byvia say &quot;.key&quot;, now it says &quot;['data']&quot;.
+It's different because the previous type used __slots__ (so there was
+no &quot;dict of&quot; involved) and this type does not (so there is a &quot;dict of&quot;
+and our dicts are the &quot;data&quot; key in it).</p>
+<p>So what is in the dicts:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; t[0].referents
+Partition of a set of 605577 objects. Total size = 34289392 bytes.
+ Index  Count   %     Size   % Cumulative  % Kind (class / dict of class)
+     0 556215  92 27710068  81  27710068  81 str
+     1  24681   4  6085704  18  33795772  99 dict (no owner)
+     2  24681   4   493620   1  34289392 100 long
+&gt;&gt;&gt; _.byvia
+Partition of a set of 605577 objects. Total size = 34289392 bytes.
+ Index  Count   %     Size   % Cumulative  % Referred Via:
+     0  24681   4  6085704  18   6085704  18 &quot;['_eclasses_']&quot;
+     1  21954   4  3742976  11   9828680  29 &quot;['DEPEND']&quot;
+     2  22511   4  3300052  10  13128732  38 &quot;['RDEPEND']&quot;
+     3  24202   4  2631304   8  15760036  46 &quot;['SRC_URI']&quot;
+     4  24681   4  1831668   5  17591704  51 &quot;['DESCRIPTION']&quot;
+     5  24674   4  1476680   4  19068384  56 &quot;['HOMEPAGE']&quot;
+     6  24681   4  1297680   4  20366064  59 &quot;['KEYWORDS']&quot;
+     7  24681   4   888516   3  21254580  62 '.keys()[3]'
+     8  24681   4   888516   3  22143096  65 '.keys()[9]'
+     9  24681   4   810108   2  22953204  67 &quot;['LICENSE']&quot;
+&lt;32 more rows. Type e.g. '_.more' to view.&gt;
+</pre>
+<p>Strings, nested dicts and longs, and most size eaten up by the
+&quot;_eclasses_&quot; values. There is also a significant amount eaten up by
+keys values, which is a bit odd, so let's investigate:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; refs = t[0].referents
+&gt;&gt;&gt; i=iter(refs.byvia[7].nodes)
+&gt;&gt;&gt; i.next()
+'DESCRIPTION'
+&gt;&gt;&gt; i.next()
+'DESCRIPTION'
+&gt;&gt;&gt; i.next()
+'DESCRIPTION'
+&gt;&gt;&gt; i.next()
+'DESCRIPTION'
+&gt;&gt;&gt; i.next()
+'DESCRIPTION'
+</pre>
+<p>Eep!</p>
+<pre class="literal-block">
+&gt;&gt;&gt; refs.byvia[7].bysize
+Partition of a set of 24681 objects. Total size = 888516 bytes.
+ Index  Count   %     Size   % Cumulative  % Individual Size
+     0  24681 100   888516 100    888516 100        36
+</pre>
+<p>It looks like we have 24681 identical strings here, using up about 1M
+of memory. The other odd entry is the '_eclasses_' string apparently.</p>
+</div>
+<div class="section" id="extra-stuff-for-c-extension-developers">
+<h1>Extra stuff for c extension developers</h1>
+<p>To provide accurate statistics if your code uses extension types you
+must provide heapy with a way to get the following data for your
+custom types:</p>
+<ul class="simple">
+<li>How large is a certain instance?</li>
+<li>What objects does an instance contain?</li>
+<li>How does the instance refer to a contained object?</li>
+</ul>
+<p>You provide these through a NyHeapDef struct, defined in heapdef.h in
+the guppy source. This header is not installed, so you should just
+copy it into your source tree. It is a good idea to read this header
+file side by side with the following descriptions, since it contains
+details omitted here. The stdtypes.c file contains implementations for
+the basic python types which you can read for inspiration.</p>
+<p>The NyHeapDef struct provides heapy with three function pointers:</p>
+<div class="section" id="sizegetter">
+<h2>SizeGetter</h2>
+<p>To answer &quot;how large is an instance&quot; you provide a
+NyHeapDef_SizeGetter function that is called with a PyObject* and
+returns an int: the number of bytes the object occupies. If you do not
+provide this function heapy uses a default that looks at the
+tp_basicsize and tp_itemsize fields of the type. This means that if
+you do not allocate any extra memory for non-python objects (e.g. for
+c strings) you do not need to provide this function.</p>
+</div>
+<div class="section" id="traverser">
+<h2>Traverser</h2>
+<p>To answer &quot;What objects does an instance contain&quot; you provide a
+traversal function (NyHeapDef_Traverser). This is called with a
+pointer to a &quot;visit procedure&quot;, an instance of your extension type and
+some other stuff. You should then call the visit procedure for every
+python object contained in your object.</p>
+<p>This might sound familiar: to support the python garbage collector you
+provide a very similar function (tp_traverse). Actually heapy will use
+tp_traverse if you do not provide a heapy-specific traverse function.
+Doing this makes sense if you do not support the garbage collector for
+some reason, or if you contain objects that are irrelevant to the
+garbage collector.</p>
+<p>An example would be a type that contains a single python string
+object (that no other code can get a reference to). If this object
+does not have references to other python objects it cannot be involved
+in cycles so supporting gc would be useless. However you do still want
+heapy to know about the memory occupied by the contained string. You
+could do that by adding that size in your NyHeapDef_SizeGetter
+function but it is probably easier to tell heapy about the string
+through the traversal function (so you do not have to calculate the
+memory occupied by the string).</p>
+<p>If the above type would also have a reference to some arbitrary
+(non-private) python object it should support gc, but it does not need
+to tell gc about the contained string. So you would have two traversal
+functions, one for heapy that visits the string and one for gc that
+does not.</p>
+</div>
+<div class="section" id="relationgetter">
+<h2>RelationGetter</h2>
+<p>The last function heapy wants tells it in what way your instance
+refers to some contained object. It is used to provide the &quot;byvia&quot;
+view. This calls a visit function once for each way your instance
+refers to a target object, telling it what kind of reference it is.</p>
+</div>
+<div class="section" id="providing-the-heapdef-struct-to-heapy">
+<h2>Providing the heapdef struct to heapy</h2>
+<p>Once you have the needed function pointers in a struct you need to
+pass this to heapy somehow. This is done through a standard cpython
+mechanism called &quot;cobjects&quot;. From python these look like rather stupid
+objects you cannot do anything with, but from c you can pull out a
+void* that was put in when the object was constructed. You can wrap an
+arbitrary pointer in a CObject, make it available as attribute of your
+module, then import it from some other module, pull the void* back
+out and cast it to the original type.</p>
+<p>heapy looks for a _NyHeapDefs_ attribute on all loaded modules. If
+this attribute exists and is a CObject the pointer in it is used as a
+pointer to an array of NyHeapDef struct (terminated with a struct with
+only nulls). Example code doing this is in sets.c in the guppy source.</p>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+

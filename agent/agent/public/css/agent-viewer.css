@@ -1,0 +1,202 @@
+body {
+	width: 100%;
+	margin: 0px;
+	height: 100%;
+	/* fallback */
+	background-color: #CFCFCF;
+	/* Safari 4-5, Chrome 1-9 */
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F3F3F3),
+		to(#CFCFCF) );
+	/* Safari 5.1, Chrome 10+ */
+	background: -webkit-linear-gradient(top, #F3F3F3, #CFCFCF);
+	/* Firefox 3.6+ */
+	background: -moz-linear-gradient(top, #F3F3F3, #CFCFCF);
+	/* IE 10 */
+	background: -ms-linear-gradient(top, #F3F3F3, #CFCFCF);
+	/* Opera 11.10+ */
+	background: -o-linear-gradient(top, #F3F3F3, #CFCFCF);
+}
+
+
+#ac-page {
+	width: 70%;
+	height: 100%;
+	min-height: 1000px;
+	align: center;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	background: #FFFFFF;
+	border: 1px solid #CCCCCC;
+}
+
+#ac-header {
+	width: 100%;
+	
+}
+
+#ac-body {
+	width: 100%;
+}
+
+#ac-footer {
+	height: 100px;
+	width: 100%;
+}
+
+#ac-stratus-logo {
+	width: 140px;
+}
+
+#ac-stratus-tagline {
+	font: 25px arial;
+	font-weight: 800;
+	float: left;
+	margin-left: 20px;
+	color: #585E58;
+}
+
+.cat-header {
+	font: 15px arial;
+	font-weight: 800;
+	width: auto;
+	padding: 10px;
+	cursor: pointer;
+	border-bottom: 1px solid #CFCFCF;
+	color: #585E58;
+	position: relative;
+	
+	/* fallback */
+	background-color: #CFCFCF;
+	/* Safari 4-5, Chrome 1-9 */
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F3F3F3),
+		to(#CFCFCF) );
+	/* Safari 5.1, Chrome 10+ */
+	background: -webkit-linear-gradient(top, #F3F3F3, #CFCFCF);
+	/* Firefox 3.6+ */
+	background: -moz-linear-gradient(top, #F3F3F3, #CFCFCF);
+	/* IE 10 */
+	background: -ms-linear-gradient(top, #F3F3F3, #CFCFCF);
+	/* Opera 11.10+ */
+	background: -o-linear-gradient(top, #F3F3F3, #CFCFCF);
+}
+
+.icon-open {
+	background-image : url(images/arrow-icon-open.gif);
+	width: 18px;
+	height: 18px;
+	display: inline-block;
+	vertical-align: bottom;
+	border: 0 none;
+}
+.icon-close {
+	background-image : url(images/arrow-icon-close.gif);
+	width: 18px;
+	height: 18px;
+	display: inline-block;
+	vertical-align: bottom;
+	border: 0 none;
+}
+
+.icon-log-file {
+	background-image : url(images/file-extension-log-icon.png);
+	width: 32px;
+	height: 32px;
+	display: inline-block;
+	vertical-align: middle;
+	border: 0 none;
+}
+
+.index-link {
+	font: 15px arial;
+	color: #585E58;
+	}
+
+.cat-index-link {
+	font: 14px arial;
+	/*font-weight: 600;
+	width: 400px;*/
+	color: #585E58;
+	/*margin-left: 10px; */
+	
+}
+
+.quick-links ul {
+	list-style-type:disc;
+	color: #585E58;
+}
+
+.divider {
+	width: 100%;
+	padding: 20px 0px 0px 0px;
+	
+}
+
+#accordian-panel {
+	border: 1px solid #CCCCCC;
+	padding: 0px;
+	
+	
+}
+
+.hidden {
+	display: none;
+}
+
+.error-message {
+	font: 17px arial;
+	font-weight: 800;
+	align: center;
+	color: red;
+}
+
+.navigation {
+	width: 100%;
+	align: left;
+}
+
+.navigation ul {
+	padding: 0px;
+	width: 400px;
+	list-style-type: square;
+}
+
+.navigation ul li {
+	background: #959695;
+	padding: 4px;
+	margin: 5px;
+	display: inline;
+}
+
+.navigation ul li a {
+	font: 17px arial;
+	font-weight: 800;
+	color: #FFFFFF;
+	padding: 5px;
+	text-decoration: none;
+}
+
+/** Tooltip ***********************/
+#dhtmlgoodies_tooltip {
+	background-color: #EEE;
+	border: 1px solid #000;
+	position: absolute;
+	display: none;
+	z-index: 20000;
+	padding: 2px;
+	font-size: 0.9em;
+	-moz-border-radius: 6px; /* Rounded edges in Firefox */
+	font-family: "Trebuchet MS", "Lucida Sans Unicode", Arial, sans-serif;
+}
+
+#dhtmlgoodies_tooltipShadow {
+	position: absolute;
+	background-color: #555;
+	display: none;
+	z-index: 10000;
+	opacity: 0.7;
+	filter: alpha(opacity = 70);
+	-khtml-opacity: 0.7;
+	-moz-opacity: 0.7;
+	-moz-border-radius: 6px; /* Rounded edges in Firefox */
+}

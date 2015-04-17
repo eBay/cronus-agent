@@ -1,0 +1,15 @@
+#!/bin/bash -ae
+
+DISTRIB=`cat /etc/lsb-release | grep "DISTRIB_ID" | cut -d'=' -f2`
+RELEASE=`cat /etc/lsb-release | grep "DISTRIB_RELEASE" | cut -d'=' -f2`
+
+if [[ $? == 0 ]]; then
+    echo "[AGENT_MESSAGE] {\"progress\": 100, \"result\": [{\"key\":\"distrib\", \"value\":\"$DISTRIB\"}, {\"key\":\"release\", \"value\":\"$RELEASE\"}]}"
+    exit 0
+else
+    echo '[AGENT_MESSAGE] {"error": 500, "errorMsg": "error occured"}'
+    exit -1
+fi
+
+echo '[AGENT_MESSAGE]{"progress": 100, "result":"App monitor script unsupported in running win32 platform"}'
+exit 0 

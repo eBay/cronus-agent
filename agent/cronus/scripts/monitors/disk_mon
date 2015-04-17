@@ -1,0 +1,135 @@
+#!/bin/bash
+
+
+# The script monitors following things about the disk of a system
+#	Disk Total
+#	Disk Used
+#	Disk Utilization
+#	Disk Avg. Wait Time
+#	Disk Read(KB) per Sec
+# 	Disk Write(KB) per Sec
+# Should there be error in reading any of the above parameters there will be "\"NA\""
+# in result.
+
+OUTPUT='[AGENT_MESSAGE]{"progress": 100, "result":['
+KEY=
+VALUE=
+FS=
+FLAG=0
+DISKNUM=0
+TIMEOUT=5
+TIMEINTERVAL=10
+
+OS_NAME=$(uname -o)
+if [ "$OS_NAME" == "Cygwin" ]; then
+      echo '[AGENT_MESSAGE]{"progress": 100, "result":"App monitor script unsupported in running win32 platform"}'
+      exit 0
+fi
+
+# Function to convert into JSON output
+
+convertJSON()
+{
+	KEY=$1
+	VALUE=$2
+	if [[ -z "$VALUE" ]]; then
+		VALUE=\"NA\"
+	fi
+	OUTPUT=$OUTPUT"{\"key\":\"$KEY\",\"value\": $VALUE},"
+}
+
+
+# Piping in while loop seems to create subshell where
+# the variables previously defined get lost.
+# Write the required output in a new file descriptor 
+# and later read from that file descriptor.
+
+exec 3<<EOF
+	`/bin/df -k -x devtmpfs -x tmpfs -x debugfs | egrep "^/dev" | awk '{print $1,$3,$4,$NF}'`
+EOF
+
+
+
+
+# Find the total and used disk space
+# after reading output from the FD previously defined.
+
+while read DEV USED AVAIL MOUNTPOINT <&3
+do
+	echo $DEV |egrep  "^/dev" > /dev/null 2>&1
+	if [ $? -eq 0 ]
+	then
+		FLAG=1
+		DISK=$(echo $DEV | awk -F"/" '{print $NF}')
+		FS=${FS}$DISK" "
+		TOTAL=$(($USED 	+ $AVAIL))
+		convertJSON ${DISK}Total $TOTAL 
+		convertJSON ${DISK}Used $USED
+	else
+		if [ X"$DEV" = X ]
+		then
+			convertJSON diskTotal \"NA\"
+			convertJSON diskUsed \"NA\"
+		else
+			convertJSON ${DISK}Total \"NA\"
+			convertJSON ${DISK}Used \"NA\"
+		fi
+	fi
+done
+
+# Close the FD
+exec 3>&-
+
+#Find number of filesystems
+FS=$(echo $FS | sed -e s/[0-9]//g)
+DISKNUM=$(for i in $FS ; do echo $i; done | sort -u | wc -l)
+
+# If there are no errors, then go and collect the iostat output
+
+if [ $FLAG = 1 ]
+then
+	exec 3<<EOF
+	`iostat -xk 1 2|  sed '/^$/d' | tail -${DISKNUM} | awk '{print $1,$6,$7,$10,$12}'`
+EOF
+
+	while read DISK READKBPS WRITEKBPS AVGWAITIME UTILIZATION <&3
+	do
+		echo $DISK > /dev/null 2>&1
+		#DISK=`echo $DISK | awk -F"/" '{print $NF}'`
+		if [ $? -eq 0 ]
+		then
+			READKBPS=`echo $READKBPS | cut -d'.' -f1`
+			WRITEKBPS=`echo $WRITEKBPS | cut -d'.' -f1`
+			AVGWAITIME=`echo $AVGWAITIME | cut -d'.' -f1`
+			UTILIZATION=`echo $UTILIZATION | cut -d'.' -f1`
+			convertJSON ${DISK}ReadRate $READKBPS
+			convertJSON ${DISK}WriteRate $WRITEKBPS
+			convertJSON ${DISK}AvgWaitTime $AVGWAITIME
+			convertJSON ${DISK}Utilization $UTILIZATION
+		else
+			if [ X"$DEV" = X ]
+			then
+				convertJSON diskReadRate \"NA\"
+				convertJSON diskWriteRate \"NA\"
+				convertJSON diskAvgWaitTime \"NA\"
+				convertJSON diskUtilization \"NA\"
+			else
+				convertJSON ${DISK}ReadRate \"NA\"
+				convertJSON ${DISK}WriteRate \"NA\"
+				convertJSON ${DISK}AvgWaitTime \"NA\"
+				convertJSON ${DISK}Utilization \"NA\"
+				 
+			fi
+		fi
+	done
+	exec 3>&-
+else 
+	convertJSON diskReadRate \"NA\"
+        convertJSON diskWriteRate \"NA\"
+        convertJSON diskAvgWaitTime \"NA\"
+        convertJSON diskUtilization \"NA\"	
+fi
+
+# Finally, complete the JSON format and output it
+OUTPUT=`echo $OUTPUT | sed -e s/,$//g`"]}[AGENT_MESSAGE_END]"
+echo $OUTPUT

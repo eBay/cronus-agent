@@ -1,0 +1,47 @@
+div#full_metrics_container{
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top:10px;
+}
+div#page_content {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.chart_img {
+	align: center;
+}
+#full_host_list_dropdown {
+	margin-left: 50px;
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+}
+.metrics_unit {
+	display: block;
+	position: relative; 
+	float: left;
+	margin-left: 10px;
+	margin-top: 3px;
+	margin-rigtht:10px;
+	margin-bottom: 3px;	
+}
+.highcharts-title {
+	cursor: pointer;
+}
+
+#all_fqdn_btn {
+	display: inline-block;
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
+}
+div#page_title {
+	padding-left: 40px;
+	padding-right: 40px; 
+	line-height: 40px;
+}
+div#page_title span#currentclusterfqdn {
+	font-size: 120%;
+	text-transform: none;
+	text-align: center;
+	text-indent: 0ex;
+	padding-top: 15px;
+}

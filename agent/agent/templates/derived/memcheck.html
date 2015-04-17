@@ -1,0 +1,79 @@
+<%inherit file='/base/index.html' />
+
+<%def name="title()">Cronus Agent Memory Profiler</%def>
+<%def name="head()"><h1>Cronus Agent Memory Profiler</h1></%def>
+
+
+<h2>Instructions</h2>
+
+
+<table border="1">
+
+
+
+<tr>
+<td><b>URL</b></td>
+<td><b>Heapy Function</b></td>
+<td><b>Descriptions</b></td>
+</tr>
+
+<tr>
+<td>/agent/memoryhelp </td>
+<td> Tutorial </td>
+<td> Reference from: <a href="http://www.smira.ru/wp-content/uploads/2011/08/heapy.html" target=_blank>How to use guppy/heapy for tracking down memory usage</a> </td>
+</tr>
+
+<tr>
+<td>/agent/memory </td>
+<td> Basic: h = hp.heap() </td>
+<td> Categorize by class </td>
+</tr>
+
+
+<tr>
+<td>/agent/memory/{index} </td>
+<td> Basic Details: h[index].byrcs </td>
+<td> Go to that index by h class; get the details by referrers classifiers set (rcs). </td>
+</tr>
+
+<tr>
+<td>/agent/memory/{index}/{index2} </td>
+<td> Basic More Details: h[index].byrcs[index2].byvia </td>
+<td> Go to that index by h; get list of objects referring a given referrers classifiers set (rcs). </td>
+</tr>
+
+<tr>
+<td>/agent/memory1 </td>
+<td> Advance: h.byrcs </td>
+<td> For every object, find all its referrers: Group together all the objects with the same referrers classifiers set (rcs).</td>
+</tr>
+
+
+<tr>
+<td>/agent/memory1/{index} </td>
+<td> Advance Details: h.byrcs[index].byclodo </td>
+<td> Go to that index by byrcs; get the details by clodo ("Clodo" for "Class or dict owner") </td>
+</tr>
+
+<tr>
+<td>/agent/memory1/{index}/{index2} </td>
+<td> Advance More Details: h[index].byclodo[index2].byvia </td>
+<td> Go to that index by h; get list of objects referring a given Clodo. ("Clodo" for "Class or dict owner") </td>
+</tr>
+
+</table>
+
+
+
+
+
+<h2>Content</h2>
+
+<pre>
+${c.memInfo[0]}
+
+
+</pre>
+
+
+

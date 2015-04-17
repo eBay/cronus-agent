@@ -1,0 +1,134 @@
+#!/bin/bash
+
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+
+LAST_LINK_STATE=/tmp/.LAST_LINK_STATE
+
+OS_NAME=$(uname -o)
+if [ "$OS_NAME" == "Cygwin" ]; then
+      echo '[AGENT_MESSAGE]{"progress": 100, "result":"App monitor script unsupported in running win32 platform"}'
+      exit 0
+fi
+
+OS=$(uname -a)
+
+case $OS in
+    SunOS*5.10)
+        OS=sol10
+	;;
+    *Ubuntu*)
+        OS=linux
+        ;;
+    Linux*)
+        OS=linux
+        ;;
+esac
+
+   
+
+E=
+/bin/echo -e "hoho" | grep -- -e > /dev/null || E="-e"
+
+printit() {
+case "$2" in		# add quotes for text 
+    [0-9]*)
+        Q=''
+	;;
+    *)
+        Q='"'
+	;;
+esac
+/bin/echo $E '{"key":"'$1'", "value":'$Q$2$Q'}'"$3\c"
+}
+
+if [ "$OS" != "linux" ] ; then
+    /bin/echo $E '[AGENT_MESSAGE] {"progress":100,"result":[]}'
+    exit
+fi
+
+
+
+CNT=0
+INTLIST=$(ifconfig | cut -f1 -d' ' | egrep -v 'lo|vir' )
+
+
+# Hard coded to the first two interfaces.
+#INTLIST="eth0 eth1"
+#sleep 1 #  sync to second on the system clock
+for INT in $INTLIST ; do
+    then[$CNT]=$(grep "$INT:" /proc/net/dev | cut -f2- -d:)
+    let CNT+=1
+done
+
+MAX=0
+sleep 2  # system watchdog is two seconds, so /proc is only updated then
+for INT in $INTLIST ; do
+    now[$MAX]=$(grep "$INT:" /proc/net/dev| cut -f2- -d:)
+    let MAX+=1
+done
+
+
+CNT=0
+
+
+COMMA=","
+/bin/echo $E '[AGENT_MESSAGE] {"progress":100,"result":['"\c"
+for INT in $INTLIST ; do
+
+    set ${now[$CNT]} foo
+    NINBYTES=${1-0}
+    NOUTBYTES=${9-0}
+
+    set ${then[$CNT]} foo
+    TINBYTES=${1-0}
+    INERRORS=${3-0}
+    TOUTBYTES=${9-0}
+    OUTERRORS=${11-0}
+    OUTCOLLISIONS=${14-0}
+
+    INBPS=$(( ($NINBYTES - $TINBYTES ) / 2048 ))
+    OUTBPS=$(( ($NOUTBYTES - $TOUTBYTES ) / 2048 ))
+
+
+
+#    printit interface $INT ,
+    printit ${INT}In $(( 8 * $INBPS))  ,
+    printit ${INT}Out $(( 8 * $OUTBPS)) ,
+    printit ${INT}InError $INERRORS ,
+    printit ${INT}OutError $OUTERRORS ,
+    printit ${INT}Collision $OUTCOLLISIONS ,
+#Speed is checked in misc_mon
+#    printit ${INT}Speed $(cat /sys/class/net/$INT/speed 2> /dev/null || echo NA ) ,
+    printit ${INT}Mode $(cat /sys/class/net/$INT/duplex 2> /dev/null || echo NA ) ,
+    
+
+    FLAP=0
+    LINK=$(cat /sys/class/net/$INT/carrier 2>/dev/null)
+    OLDLINK=$(cat ${LAST_LINK_STATE}.${INT} 2>/dev/null)
+    if [ "${LINK:=0}" != "${OLDLINK:=0}" ] ; then
+        echo $LINK > ${LAST_LINK_STATE}.${INT}
+	FLAP=1
+    fi
+    if [ "$LINK" = 0 ] ; then
+        LINK="down" 
+    elif [ "$LINK" = 1 ] ; then
+        LINK="up"
+    fi
+
+    let CNT+=1
+    printit ${INT}Linkstate $LINK ,
+    printit ${INT}FlapDetected $FLAP ,
+
+done
+
+# For CLOSE_WAIT and TIME_WAIT
+END=']}[AGENT_MESSAGE_END]\n'
+NETSTAT_OUTPUT=$(netstat -an | egrep "CLOSE_WAIT|TIME_WAIT")
+CLOSE_WAIT=$(echo $NETSTAT_OUTPUT | egrep -o "CLOSE_WAIT" | wc -l)
+TIME_WAIT=$(echo $NETSTAT_OUTPUT | egrep -o "TIME_WAIT" | wc -l)
+set $(netstat -s | grep -i 'segments retransmited')
+RETRANS=$1
+printit retransmit $RETRANS ,
+printit time_wait $TIME_WAIT ,
+printit close_wait $CLOSE_WAIT $END
